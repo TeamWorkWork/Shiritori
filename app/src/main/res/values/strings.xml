@@ -4,4 +4,6 @@
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
+    <string name="lbl_game_title">英語deしりとり</string>
+    <string name="lb_start">START</string>
 </resources>

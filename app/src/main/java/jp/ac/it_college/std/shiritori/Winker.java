@@ -1,3 +1,5 @@
+package jp.ac.it_college.std.shiritori;
+
 import android.animation.Animator;
 import android.animation.AnimatorSet;
 import android.animation.ObjectAnimator;
@@ -26,12 +28,17 @@ public class Winker {
         scheduledExecutor.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {
-                view.setVisibility(View.VISIBLE);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        view.setVisibility(View.VISIBLE);
 
-                // HONEYCOMBより前のAndroid SDKがProperty Animation非対応のため
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-                    animateAlpha();
-                }
+                        // HONEYCOMBより前のAndroid SDKがProperty Animation非対応のため
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
+                            animateAlpha();
+                        }
+                    }
+                });
             }
         }, 0, 1700, TimeUnit.MILLISECONDS);
     }

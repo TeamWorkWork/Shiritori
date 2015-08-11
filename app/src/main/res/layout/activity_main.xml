@@ -15,6 +15,7 @@
             android:layout_height="0dp"
             android:layout_weight="1" >
             <TextView
+                android:id="@+id/lbl_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/lbl_game_title"
@@ -29,6 +30,7 @@
             android:layout_height="0dp"
             android:layout_weight="1" >
             <TextView
+                android:id="@+id/lbl_start"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="48sp"

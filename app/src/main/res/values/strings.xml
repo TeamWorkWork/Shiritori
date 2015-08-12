@@ -9,5 +9,9 @@
 
     <string name="create_room">ルーム作成</string>
     <string name="search_room">ルーム検索</string>
+    <string name="opponent_name">対戦者名</string>
+    <string name="opponent_word">相手の単語</string>
+    <string name="hint_text">英単語を入力してね</string>
+    <string name="send_text">送信</string>
 
 </resources>

@@ -3,5 +3,14 @@
     android:layout_height="match_parent"
     tools:context="jp.ac.it_college.std.shiritori.StartFragment">
 
+    <TextView
+        android:id="@+id/lbl_start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="48sp"
+        android:text="@string/lb_start"
+        android:layout_gravity="center"
+        />
+
 
 </FrameLayout>

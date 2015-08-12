@@ -6,4 +6,7 @@
     <string name="action_settings">Settings</string>
     <string name="lbl_game_title">英語deしりとり</string>
     <string name="lb_start">START</string>
+
+    <string name="create_room">ルーム作成</string>
+    <string name="search_room">ルーム検索</string>
 </resources>

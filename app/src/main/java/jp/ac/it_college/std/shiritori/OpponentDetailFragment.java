@@ -7,7 +7,6 @@ import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pInfo;
-import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -55,8 +54,8 @@ public class OpponentDetailFragment extends Fragment implements View.OnClickList
             progressDialog.dismiss();
         }
 
-        progressDialog = ProgressDialog.show(getActivity(), getResources().getString(R.string.connect),
-                device.deviceName + getResources().getString(R.string.to_connect), true, true,
+        progressDialog = ProgressDialog.show(getActivity(), getResources().getString(R.string.dialog_title_connect),
+                device.deviceName + getResources().getString(R.string.dialog_message_to_connect), true, true,
                         new DialogInterface.OnCancelListener() {
 
                             @Override

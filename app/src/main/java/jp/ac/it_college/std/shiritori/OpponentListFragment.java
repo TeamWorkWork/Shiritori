@@ -107,8 +107,8 @@ public class OpponentListFragment extends ListFragment
             progressDialog.dismiss();
         }
         progressDialog = ProgressDialog.show(getActivity(),
-                getResources().getString(R.string.dialog_title),
-                getResources().getString(R.string.dialog_message),
+                getResources().getString(R.string.dialog_title_opponent_search),
+                getResources().getString(R.string.dialog_message_opponent_search),
                 true, true, new DialogInterface.OnCancelListener() {
 
                     @Override

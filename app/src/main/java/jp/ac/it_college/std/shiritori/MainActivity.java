@@ -1,8 +1,10 @@
 package jp.ac.it_college.std.shiritori;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.NetworkInfo;
@@ -11,6 +13,7 @@ import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.os.Bundle;
+import android.provider.Settings;
 
 public class MainActivity extends Activity
         implements OnReceiveListener, DeviceActionListener{
@@ -171,6 +174,19 @@ public class MainActivity extends Activity
     @Override
     public void searchPeer() {
         if (!isWifiP2pEnabled) {
+            //検索ボタン押下時、WiFiがOffの場合アラートダイアログを表示する
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.alert_wifi_title)
+                    .setMessage(R.string.alert_wifi_message)
+                    .setPositiveButton(R.string.alert_btn_wifi_setting, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                        }
+                    })
+                    .setNegativeButton(R.string.alert_btn_cancel, null)
+                    .show();
+
             return;
         }
 

@@ -5,6 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
@@ -83,7 +84,20 @@ public class MainActivity extends Activity
     /* IPアドレスなどコネクション情報。通信状態の変更通知 */
     @Override
     public void onConnectionChanged(Intent intent) {
+        if (manager == null) {
+            return;
+        }
 
+        NetworkInfo networkInfo = (NetworkInfo) intent
+                .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+
+        if (networkInfo.isConnected()) {
+            OpponentDetailFragment fragment = (OpponentDetailFragment) getFragmentManager()
+                    .findFragmentById(R.id.container_detail);
+            manager.requestConnectionInfo(channel, fragment);
+        } else {
+
+        }
     }
 
     /* 自分自身のデバイス状態の変更通知(相手デバイスではないことに注意) */

@@ -9,5 +9,9 @@
 
     <string name="create_room">ルーム作成</string>
     <string name="search_room">ルーム検索</string>
+    <string name="discover">検索</string>
+    <string name="setting">WiFi設定</string>
+    <string name="dialog_title">ピアを検索</string>
+    <string name="dialog_message">対戦相手を検索中...</string>
 
 </resources>

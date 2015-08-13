@@ -24,11 +24,19 @@ public class ModeSelectFragment extends Fragment implements View.OnClickListener
         return inflater.inflate(R.layout.fragment_mode_select, container, false);
     }
 
+    private void searchRoomBtnClicked() {
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container_root, new OpponentListFragment())
+                .addToBackStack(null)
+                .commit();
+    }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_search_room:
+                //ルーム検索ボタンが押された時の処理
+                searchRoomBtnClicked();
                 break;
             case R.id.btn_create_room:
                 break;

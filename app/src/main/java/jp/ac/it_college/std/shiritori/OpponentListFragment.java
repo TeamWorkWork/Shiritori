@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -29,6 +30,13 @@ public class OpponentListFragment extends ListFragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.container_detail, new OpponentDetailFragment())
+                    .commit();
+        }
+
         //各ボタンのOnClickListenerを設定
         getView().findViewById(R.id.btn_wifi_setting).setOnClickListener(this);
         getView().findViewById(R.id.btn_discover).setOnClickListener(this);
@@ -60,6 +68,15 @@ public class OpponentListFragment extends ListFragment
                 return "Unknown";
 
         }
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        OpponentDetailFragment fragment =
+                (OpponentDetailFragment) getFragmentManager().findFragmentById(R.id.container_detail);
+        WifiP2pDevice device = (WifiP2pDevice) getListAdapter().getItem(position);
+
+        fragment.showDetails(device);
     }
 
     @Override

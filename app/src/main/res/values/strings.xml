@@ -9,5 +9,7 @@
 
     <string name="create_room">ルーム作成</string>
     <string name="search_room">ルーム検索</string>
+    <string name="discover">検索</string>
+    <string name="setting">WiFi設定</string>
 
 </resources>

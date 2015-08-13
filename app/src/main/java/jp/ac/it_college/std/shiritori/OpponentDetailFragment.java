@@ -58,7 +58,7 @@ public class OpponentDetailFragment extends Fragment implements View.OnClickList
         }
 
         progressDialog = ProgressDialog.show(getActivity(), getResources().getString(R.string.connect),
-                device.deviceAddress + getResources().getString(R.string.to_connect), true, true,
+                device.deviceName + getResources().getString(R.string.to_connect), true, true,
                         new DialogInterface.OnCancelListener() {
 
                             @Override

@@ -2,8 +2,6 @@
     <string name="app_name">Shiritori</string>
     <string name="title_activity_main">MainActivity</string>
 
-    <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
     <string name="lbl_game_title">英語deしりとり</string>
     <string name="lb_start">START</string>
 
@@ -11,7 +9,7 @@
     <string name="search_room">ルーム検索</string>
     <string name="discover">検索</string>
     <string name="setting">WiFi設定</string>
-    <string name="dialog_title">ピアを検索</string>
+    <string name="dialog_title">対戦相手検索</string>
     <string name="dialog_message">対戦相手を検索中...</string>
     <string name="connect">接続</string>
     <string name="disconnect">切断</string>

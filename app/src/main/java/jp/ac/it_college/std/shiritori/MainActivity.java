@@ -127,11 +127,8 @@ public class MainActivity extends Activity
     /*
     Implemented DeviceActionListener
      */
-    @Override
-    public void showDetails(WifiP2pDevice device) {
 
-    }
-
+    //TODO 接続を途中で中段した場合の切断処理を実装
     @Override
     public void cancelDisconnect() {
 

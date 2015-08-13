@@ -123,7 +123,7 @@ public class OpponentListFragment extends ListFragment
     }
 
     private void showWifiSetting() {
-        startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
+        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
     }
 
     public void clearPeers() {

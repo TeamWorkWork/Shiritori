@@ -89,8 +89,10 @@ public class OpponentListFragment extends ListFragment
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
-        progressDialog = ProgressDialog.show(getActivity(), "Press back to cancel", "finding peers", true,
-                true, new DialogInterface.OnCancelListener() {
+        progressDialog = ProgressDialog.show(getActivity(),
+                getResources().getString(R.string.dialog_title),
+                getResources().getString(R.string.dialog_message),
+                true, true, new DialogInterface.OnCancelListener() {
 
                     @Override
                     public void onCancel(DialogInterface dialog) {

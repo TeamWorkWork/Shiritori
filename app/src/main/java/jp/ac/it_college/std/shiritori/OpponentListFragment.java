@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,9 @@ public class OpponentListFragment extends ListFragment
         //各ボタンのOnClickListenerを設定
         getView().findViewById(R.id.btn_wifi_setting).setOnClickListener(this);
         getView().findViewById(R.id.btn_discover).setOnClickListener(this);
+
+        //アダプターの設定
+        setListAdapter(new WiFiPeerListAdapter(getActivity(), R.layout.row_devices, peers));
     }
 
     @Override
@@ -40,6 +44,24 @@ public class OpponentListFragment extends ListFragment
         return inflater.inflate(R.layout.fragment_opponent_list, container, false);
     }
 
+    private static String getDeviceStatus(int deviceStatus) {
+        switch (deviceStatus) {
+            case WifiP2pDevice.AVAILABLE:
+                return "Available";
+            case WifiP2pDevice.INVITED:
+                return "Invited";
+            case WifiP2pDevice.CONNECTED:
+                return "Connected";
+            case WifiP2pDevice.FAILED:
+                return "Failed";
+            case WifiP2pDevice.UNAVAILABLE:
+                return "Unavailable";
+            default:
+                return "Unknown";
+
+        }
+    }
+
     @Override
     public void onPeersAvailable(WifiP2pDeviceList peersList) {
         if (progressDialog != null && progressDialog.isShowing()) {
@@ -47,7 +69,7 @@ public class OpponentListFragment extends ListFragment
         }
         peers.clear();
         peers.addAll(peersList.getDeviceList());
-
+        ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
     }
 
     @Override
@@ -96,7 +118,25 @@ public class OpponentListFragment extends ListFragment
 
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            return super.getView(position, convertView, parent);
+            View v = convertView;
+            if (v == null) {
+                LayoutInflater vi = (LayoutInflater) getActivity().getSystemService(
+                        Context.LAYOUT_INFLATER_SERVICE);
+                v = vi.inflate(R.layout.row_devices, null);
+            }
+            WifiP2pDevice device = items.get(position);
+            if (device != null) {
+                TextView top = (TextView) v.findViewById(R.id.device_name);
+                TextView bottom = (TextView) v.findViewById(R.id.device_details);
+                if (top != null) {
+                    top.setText(device.deviceName);
+                }
+                if (bottom != null) {
+                    bottom.setText(getDeviceStatus(device.status));
+                }
+            }
+
+            return v;
         }
     }
 }

@@ -43,13 +43,8 @@ public class OpponentDetailFragment extends Fragment implements View.OnClickList
         view.setText(device.toString());
     }
 
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-            case R.id.btn_connect:
-                wifiP2pConnect();
-                break;
-        }
+    private void wifiP2pDisconnect() {
+        ((DeviceActionListener) getActivity()).disconnect();
     }
 
     private void wifiP2pConnect() {
@@ -75,10 +70,27 @@ public class OpponentDetailFragment extends Fragment implements View.OnClickList
 
     }
 
+    public void resetViews() {
+        TextView view = (TextView) getView().findViewById(R.id.lbl_device_info);
+        view.setText(R.string.empty);
+        getView().setVisibility(View.INVISIBLE);
+    }
+
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_connect:
+                wifiP2pConnect();
+                break;
+            case R.id.btn_disconnect:
+                wifiP2pDisconnect();
         }
     }
 }

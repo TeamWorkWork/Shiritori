@@ -56,6 +56,20 @@ public class MainActivity extends Activity
         unregisterReceiver(receiver);
     }
 
+    private void resetData() {
+        OpponentListFragment fragmentList = (OpponentListFragment) getFragmentManager()
+                .findFragmentById(R.id.container_root);
+        OpponentDetailFragment fragmentDetails = (OpponentDetailFragment) getFragmentManager()
+                .findFragmentById(R.id.container_detail);
+
+        if (fragmentList != null) {
+            fragmentList.clearPeers();
+        }
+        if (fragmentDetails != null) {
+            fragmentDetails.resetViews();
+        }
+    }
+
     /*
     Implemented OnReceiveListener
      */
@@ -96,7 +110,7 @@ public class MainActivity extends Activity
                     .findFragmentById(R.id.container_detail);
             manager.requestConnectionInfo(channel, fragment);
         } else {
-
+            resetData();
         }
     }
 
@@ -137,7 +151,21 @@ public class MainActivity extends Activity
 
     @Override
     public void disconnect() {
+        OpponentDetailFragment fragmentDetails = (OpponentDetailFragment) getFragmentManager()
+                .findFragmentById(R.id.container_detail);
+        fragmentDetails.resetViews();
 
+        manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailure(int reason) {
+
+            }
+        });
     }
 
     @Override

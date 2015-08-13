@@ -126,6 +126,11 @@ public class OpponentListFragment extends ListFragment
         startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
     }
 
+    public void clearPeers() {
+        peers.clear();
+        ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
+    }
+
     private class WiFiPeerListAdapter extends ArrayAdapter {
 
         private List<WifiP2pDevice> items;

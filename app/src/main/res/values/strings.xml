@@ -13,5 +13,7 @@
     <string name="setting">WiFi設定</string>
     <string name="dialog_title">ピアを検索</string>
     <string name="dialog_message">対戦相手を検索中...</string>
+    <string name="connect">接続</string>
+    <string name="disconnect">切断</string>
 
 </resources>

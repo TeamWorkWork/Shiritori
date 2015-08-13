@@ -108,7 +108,17 @@ public class MainActivity extends Activity
 
     @Override
     public void connect(WifiP2pConfig config) {
+        manager.connect(channel, config, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
 
+            }
+
+            @Override
+            public void onFailure(int reason) {
+
+            }
+        });
     }
 
     @Override

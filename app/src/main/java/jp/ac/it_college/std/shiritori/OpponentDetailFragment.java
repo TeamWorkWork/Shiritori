@@ -1,6 +1,10 @@
 package jp.ac.it_college.std.shiritori;
 
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.net.wifi.WpsInfo;
+import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.os.Bundle;
 import android.app.Fragment;
@@ -11,6 +15,17 @@ import android.widget.TextView;
 
 public class OpponentDetailFragment extends Fragment implements View.OnClickListener{
 
+    private WifiP2pDevice device;
+    private ProgressDialog  progressDialog;
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        //各ボタンのクリックリスナーをセット
+        getView().findViewById(R.id.btn_connect).setOnClickListener(this);
+        getView().findViewById(R.id.btn_disconnect).setOnClickListener(this);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -19,6 +34,7 @@ public class OpponentDetailFragment extends Fragment implements View.OnClickList
     }
 
     public void showDetails(WifiP2pDevice device) {
+        this.device = device;
         getView().setVisibility(View.VISIBLE);
         TextView view = (TextView) getView().findViewById(R.id.lbl_device_info);
         view.setText(device.toString());
@@ -26,6 +42,33 @@ public class OpponentDetailFragment extends Fragment implements View.OnClickList
 
     @Override
     public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.btn_connect:
+                wifiP2pConnect();
+                break;
+        }
+    }
+
+    private void wifiP2pConnect() {
+        WifiP2pConfig config = new WifiP2pConfig();
+        config.deviceAddress = device.deviceAddress;
+        config.wps.setup = WpsInfo.PBC;
+        if (progressDialog != null && progressDialog.isShowing()) {
+            progressDialog.dismiss();
+        }
+
+        progressDialog = ProgressDialog.show(getActivity(), getResources().getString(R.string.connect),
+                device.deviceAddress + getResources().getString(R.string.to_connect), true, true,
+                        new DialogInterface.OnCancelListener() {
+
+                            @Override
+                            public void onCancel(DialogInterface dialog) {
+                                ((DeviceActionListener) getActivity()).cancelDisconnect();
+                            }
+                        }
+        );
+
+        ((DeviceActionListener) getActivity()).connect(config);
 
     }
 }

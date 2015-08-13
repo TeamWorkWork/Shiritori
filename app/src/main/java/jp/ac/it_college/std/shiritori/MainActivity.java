@@ -5,15 +5,20 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.wifi.p2p.WifiP2pConfig;
+import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.os.Bundle;
 
-public class MainActivity extends Activity implements OnReceiveListener{
+public class MainActivity extends Activity
+        implements OnReceiveListener, DeviceActionListener{
 
     private IntentFilter intentFilter;
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
     private BroadcastReceiver receiver;
+    private boolean isWifiP2pEnabled = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,13 +62,22 @@ public class MainActivity extends Activity implements OnReceiveListener{
     /* WiFi Directの有効/無効状態が通知される。機能制限やユーザへの通知に利用 */
     @Override
     public void onStateChanged(Intent intent) {
-
+        int state = intent.getIntExtra(WifiP2pManager.EXTRA_WIFI_STATE, -1);
+        if (state == WifiP2pManager.WIFI_P2P_STATE_ENABLED) {
+            this.isWifiP2pEnabled = true;
+        } else {
+            this.isWifiP2pEnabled = false;
+        }
     }
 
     /* デバイス情報の変更通知（通信可能なデバイスの発見・ロストなど） */
     @Override
     public void onPeersChanged(Intent intent) {
-
+        if (manager != null) {
+            PeerListListener listener = (PeerListListener) getFragmentManager()
+                    .findFragmentById(R.id.container_root);
+            manager.requestPeers(channel, listener);
+        }
     }
 
     /* IPアドレスなどコネクション情報。通信状態の変更通知 */
@@ -76,5 +90,52 @@ public class MainActivity extends Activity implements OnReceiveListener{
     @Override
     public void onDeviceChanged(Intent intent) {
 
+    }
+
+
+    /*
+    Implemented DeviceActionListener
+     */
+    @Override
+    public void showDetails(WifiP2pDevice device) {
+
+    }
+
+    @Override
+    public void cancelDisconnect() {
+
+    }
+
+    @Override
+    public void connect(WifiP2pConfig config) {
+
+    }
+
+    @Override
+    public void disconnect() {
+
+    }
+
+    @Override
+    public void searchPeer() {
+        if (!isWifiP2pEnabled) {
+            return;
+        }
+
+        OpponentListFragment fragment = (OpponentListFragment)getFragmentManager()
+                .findFragmentById(R.id.container_root);
+        fragment.onInitiateDiscovery();
+
+        manager.discoverPeers(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailure(int reason) {
+
+            }
+        });
     }
 }

@@ -1,3 +1,24 @@
 <resources>
     <string name="app_name">Shiritori</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="lbl_game_title">英語deしりとり</string>
+    <string name="lb_start">START</string>
+
+    <string name="create_room">ルーム作成</string>
+    <string name="search_room">ルーム検索</string>
+    <string name="discover">検索</string>
+    <string name="setting">WiFi設定</string>
+    <string name="dialog_title_opponent_search">対戦相手検索</string>
+    <string name="dialog_message_opponent_search">対戦相手を検索中...</string>
+    <string name="dialog_title_connect">接続</string>
+    <string name="dialog_message_to_connect">に接続中...</string>
+    <string name="disconnect">切断</string>
+    <string name="label_opponent">対戦相手一覧</string>
+    <string name="empty" />
+    <string name="alert_wifi_title">WiFi設定</string>
+    <string name="alert_wifi_message">WiFiの設定がOffになっています。設定をOnにしてください。</string>
+    <string name="alert_btn_wifi_setting">WiFi設定を開く</string>
+    <string name="alert_btn_cancel">キャンセル</string>
+
 </resources>

@@ -21,6 +21,7 @@ public class MainActivity extends Activity
     private IntentFilter intentFilter;
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
+    private WifiP2pDevice device;
     private BroadcastReceiver receiver;
     private boolean isWifiP2pEnabled = false;
 
@@ -120,7 +121,7 @@ public class MainActivity extends Activity
     /* 自分自身のデバイス状態の変更通知(相手デバイスではないことに注意) */
     @Override
     public void onDeviceChanged(Intent intent) {
-
+        this.device = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
     }
 
 
@@ -128,10 +129,26 @@ public class MainActivity extends Activity
     Implemented DeviceActionListener
      */
 
-    //TODO 接続を途中で中段した場合の切断処理を実装
     @Override
     public void cancelDisconnect() {
+        if (manager != null) {
+            if (device == null || device.status == WifiP2pDevice.CONNECTED) {
+                disconnect();
+            } else if (device.status == WifiP2pDevice.AVAILABLE
+                    || device.status == WifiP2pDevice.INVITED) {
+                manager.cancelConnect(channel, new WifiP2pManager.ActionListener() {
+                    @Override
+                    public void onSuccess() {
 
+                    }
+
+                    @Override
+                    public void onFailure(int reason) {
+
+                    }
+                });
+            }
+        }
     }
 
     @Override

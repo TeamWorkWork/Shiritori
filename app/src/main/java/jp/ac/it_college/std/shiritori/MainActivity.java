@@ -1,15 +1,19 @@
 package jp.ac.it_college.std.shiritori;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.os.Bundle;
+import android.provider.Settings;
 
 public class MainActivity extends Activity
         implements OnReceiveListener, DeviceActionListener{
@@ -17,6 +21,7 @@ public class MainActivity extends Activity
     private IntentFilter intentFilter;
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
+    private WifiP2pDevice device;
     private BroadcastReceiver receiver;
     private boolean isWifiP2pEnabled = false;
 
@@ -55,6 +60,20 @@ public class MainActivity extends Activity
         unregisterReceiver(receiver);
     }
 
+    private void resetData() {
+        OpponentListFragment fragmentList = (OpponentListFragment) getFragmentManager()
+                .findFragmentById(R.id.container_root);
+        OpponentDetailFragment fragmentDetails = (OpponentDetailFragment) getFragmentManager()
+                .findFragmentById(R.id.container_detail);
+
+        if (fragmentList != null) {
+            fragmentList.clearPeers();
+        }
+        if (fragmentDetails != null) {
+            fragmentDetails.resetViews();
+        }
+    }
+
     /*
     Implemented OnReceiveListener
      */
@@ -83,42 +102,105 @@ public class MainActivity extends Activity
     /* IPアドレスなどコネクション情報。通信状態の変更通知 */
     @Override
     public void onConnectionChanged(Intent intent) {
+        if (manager == null) {
+            return;
+        }
 
+        NetworkInfo networkInfo = (NetworkInfo) intent
+                .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+
+        if (networkInfo.isConnected()) {
+            OpponentDetailFragment fragment = (OpponentDetailFragment) getFragmentManager()
+                    .findFragmentById(R.id.container_detail);
+            manager.requestConnectionInfo(channel, fragment);
+        } else {
+            resetData();
+        }
     }
 
     /* 自分自身のデバイス状態の変更通知(相手デバイスではないことに注意) */
     @Override
     public void onDeviceChanged(Intent intent) {
-
+        this.device = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
     }
 
 
     /*
     Implemented DeviceActionListener
      */
-    @Override
-    public void showDetails(WifiP2pDevice device) {
-
-    }
 
     @Override
     public void cancelDisconnect() {
+        if (manager != null) {
+            if (device == null || device.status == WifiP2pDevice.CONNECTED) {
+                disconnect();
+            } else if (device.status == WifiP2pDevice.AVAILABLE
+                    || device.status == WifiP2pDevice.INVITED) {
+                manager.cancelConnect(channel, new WifiP2pManager.ActionListener() {
+                    @Override
+                    public void onSuccess() {
 
+                    }
+
+                    @Override
+                    public void onFailure(int reason) {
+
+                    }
+                });
+            }
+        }
     }
 
     @Override
     public void connect(WifiP2pConfig config) {
+        manager.connect(channel, config, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
 
+            }
+
+            @Override
+            public void onFailure(int reason) {
+
+            }
+        });
     }
 
     @Override
     public void disconnect() {
+        OpponentDetailFragment fragmentDetails = (OpponentDetailFragment) getFragmentManager()
+                .findFragmentById(R.id.container_detail);
+        fragmentDetails.resetViews();
 
+        manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailure(int reason) {
+
+            }
+        });
     }
 
     @Override
     public void searchPeer() {
         if (!isWifiP2pEnabled) {
+            //検索ボタン押下時、WiFiがOffの場合アラートダイアログを表示する
+            new AlertDialog.Builder(this)
+                    .setTitle(R.string.alert_wifi_title)
+                    .setMessage(R.string.alert_wifi_message)
+                    .setPositiveButton(R.string.alert_btn_wifi_setting, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                        }
+                    })
+                    .setNegativeButton(R.string.alert_btn_cancel, null)
+                    .show();
+
             return;
         }
 

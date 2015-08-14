@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -29,6 +30,13 @@ public class OpponentListFragment extends ListFragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction()
+                    .add(R.id.container_detail, new OpponentDetailFragment())
+                    .commit();
+        }
+
         //各ボタンのOnClickListenerを設定
         getView().findViewById(R.id.btn_wifi_setting).setOnClickListener(this);
         getView().findViewById(R.id.btn_discover).setOnClickListener(this);
@@ -63,6 +71,15 @@ public class OpponentListFragment extends ListFragment
     }
 
     @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        OpponentDetailFragment fragment =
+                (OpponentDetailFragment) getFragmentManager().findFragmentById(R.id.container_detail);
+        WifiP2pDevice device = (WifiP2pDevice) getListAdapter().getItem(position);
+
+        fragment.showDetails(device);
+    }
+
+    @Override
     public void onPeersAvailable(WifiP2pDeviceList peersList) {
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
@@ -90,8 +107,8 @@ public class OpponentListFragment extends ListFragment
             progressDialog.dismiss();
         }
         progressDialog = ProgressDialog.show(getActivity(),
-                getResources().getString(R.string.dialog_title),
-                getResources().getString(R.string.dialog_message),
+                getResources().getString(R.string.dialog_title_opponent_search),
+                getResources().getString(R.string.dialog_message_opponent_search),
                 true, true, new DialogInterface.OnCancelListener() {
 
                     @Override
@@ -106,7 +123,12 @@ public class OpponentListFragment extends ListFragment
     }
 
     private void showWifiSetting() {
-        startActivity(new Intent(Settings.ACTION_WIFI_IP_SETTINGS));
+        startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+    }
+
+    public void clearPeers() {
+        peers.clear();
+        ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
     }
 
     private class WiFiPeerListAdapter extends ArrayAdapter {

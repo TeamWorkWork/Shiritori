@@ -31,6 +31,13 @@ public class ModeSelectFragment extends Fragment implements View.OnClickListener
                 .commit();
     }
 
+    private void createRoomBtnClicked() {
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container_root, new RoomFragment())
+                .addToBackStack(null)
+                .commit();
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -39,6 +46,8 @@ public class ModeSelectFragment extends Fragment implements View.OnClickListener
                 searchRoomBtnClicked();
                 break;
             case R.id.btn_create_room:
+                //ルーム作成ボタンが押された時の処理
+                createRoomBtnClicked();
                 break;
         }
     }

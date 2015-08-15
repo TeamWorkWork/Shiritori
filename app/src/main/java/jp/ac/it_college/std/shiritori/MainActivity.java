@@ -14,6 +14,7 @@ import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.widget.Toast;
 
 public class MainActivity extends Activity
         implements OnReceiveListener, DeviceActionListener{
@@ -65,16 +66,20 @@ public class MainActivity extends Activity
     }
 
     private void resetData() {
-        OpponentListFragment fragmentList = (OpponentListFragment) getFragmentManager()
-                .findFragmentById(R.id.container_root);
-        OpponentDetailFragment fragmentDetails = (OpponentDetailFragment) getFragmentManager()
-                .findFragmentById(R.id.container_detail);
+        try {
+            OpponentListFragment fragmentList = (OpponentListFragment) getFragmentManager()
+                    .findFragmentById(R.id.container_root);
+            OpponentDetailFragment fragmentDetails = (OpponentDetailFragment) getFragmentManager()
+                    .findFragmentById(R.id.container_detail);
 
-        if (fragmentList != null) {
-            fragmentList.clearPeers();
-        }
-        if (fragmentDetails != null) {
-            fragmentDetails.resetViews();
+            if (fragmentList != null) {
+                fragmentList.clearPeers();
+            }
+            if (fragmentDetails != null) {
+                fragmentDetails.resetViews();
+            }
+        } catch (ClassCastException e) {
+            e.printStackTrace();
         }
     }
 

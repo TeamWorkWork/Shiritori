@@ -20,5 +20,9 @@
     <string name="alert_wifi_message">WiFiの設定がOffになっています。設定をOnにしてください。</string>
     <string name="alert_btn_wifi_setting">WiFi設定を開く</string>
     <string name="alert_btn_cancel">キャンセル</string>
+    <string name="lbl_me">自分</string>
+    <string name="lbl_opponents">対戦者</string>
+    <string name="empty_message">対戦者待ち</string>
+    <string name="game_start">ゲーム開始</string>
 
 </resources>

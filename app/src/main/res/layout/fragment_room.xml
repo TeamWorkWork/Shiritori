@@ -64,23 +64,27 @@
         android:background="@android:color/holo_blue_light" />
 
     <!-- Available peers -->
-    <ListView
-        android:id="@id/android:list"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
-        android:drawSelectorOnTop="false" />
+        android:layout_height="match_parent">
+        <ListView
+            android:id="@id/android:list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:drawSelectorOnTop="false" />
 
-    <TextView
-        android:id="@id/android:empty"
-        android:layout_width="match_parent"
-        android:layout_gravity="center"
-        android:layout_height="wrap_content"
-        android:text="@string/empty_message" />
+        <TextView
+            android:id="@id/android:empty"
+            android:layout_width="match_parent"
+            android:layout_gravity="top"
+            android:layout_height="wrap_content"
+            android:text="@string/empty_message" />
 
-    <Button
-        android:id="@+id/btn_game_start"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/game_start" />
+        <Button
+            android:id="@+id/btn_game_start"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:text="@string/game_start" />
+    </FrameLayout>
 </LinearLayout>

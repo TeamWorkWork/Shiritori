@@ -60,6 +60,10 @@ public class MainActivity extends Activity
         unregisterReceiver(receiver);
     }
 
+    public WifiP2pDevice getDevice() {
+        return device;
+    }
+
     private void resetData() {
         OpponentListFragment fragmentList = (OpponentListFragment) getFragmentManager()
                 .findFragmentById(R.id.container_root);

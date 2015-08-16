@@ -215,10 +215,12 @@ public class OpponentListFragment extends ListFragment
     private class WiFiPeerListAdapter extends ArrayAdapter {
 
         private List<WifiP2pDevice> items;
+        private int resource;
 
         public WiFiPeerListAdapter(Context context, int resource, List objects) {
             super(context, resource, objects);
             items = objects;
+            this.resource = resource;
         }
 
         @Override
@@ -227,7 +229,7 @@ public class OpponentListFragment extends ListFragment
             if (v == null) {
                 LayoutInflater vi = (LayoutInflater) getActivity().getSystemService(
                         Context.LAYOUT_INFLATER_SERVICE);
-                v = vi.inflate(R.layout.row_devices, null);
+                v = vi.inflate(resource, null);
             }
             WifiP2pDevice device = items.get(position);
             if (device != null) {

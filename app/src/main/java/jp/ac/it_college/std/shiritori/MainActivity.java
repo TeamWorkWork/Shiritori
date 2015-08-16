@@ -16,7 +16,8 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.widget.Toast;
 
-public class MainActivity extends Activity implements OnReceiveListener {
+public class MainActivity extends Activity
+        implements OnReceiveListener, DeviceActionListener {
 
     private IntentFilter intentFilter;
     private WifiP2pManager manager;
@@ -61,6 +62,7 @@ public class MainActivity extends Activity implements OnReceiveListener {
     @Override
     protected void onPause() {
         super.onPause();
+        disconnect();
         unregisterReceiver(receiver);
     }
 
@@ -110,5 +112,38 @@ public class MainActivity extends Activity implements OnReceiveListener {
     @Override
     public void onDeviceChanged(Intent intent) {
         this.device = intent.getParcelableExtra(WifiP2pManager.EXTRA_WIFI_P2P_DEVICE);
+    }
+
+    /*
+    Implemented DeviceActionListener
+     */
+    @Override
+    public void cancelDisconnect() {
+
+    }
+
+    @Override
+    public void connect(WifiP2pConfig config) {
+
+    }
+
+    @Override
+    public void disconnect() {
+        manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailure(int reason) {
+
+            }
+        });
+    }
+
+    @Override
+    public void showDetails(WifiP2pDevice device) {
+
     }
 }

@@ -16,5 +16,14 @@ public class TitleFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_title, container, false);
     }
 
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
 
+        if (savedInstanceState == null) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container_bottom, new StartFragment())
+                    .commit();
+        }
+    }
 }

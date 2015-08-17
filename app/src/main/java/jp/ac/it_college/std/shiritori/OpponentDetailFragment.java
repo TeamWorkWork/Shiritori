@@ -19,7 +19,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-import android.widget.Toast;
 
 public class OpponentDetailFragment extends Fragment
         implements View.OnClickListener, ConnectionInfoListener, OnReceiveListener,
@@ -106,7 +105,6 @@ public class OpponentDetailFragment extends Fragment
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
-        Toast.makeText(getActivity(), "onConnectionInfoAvailable", Toast.LENGTH_SHORT).show();
 
         //ルーム入室
         enterRoom(info, group);
@@ -235,7 +233,6 @@ public class OpponentDetailFragment extends Fragment
      */
     @Override
     public void onGroupInfoAvailable(WifiP2pGroup group) {
-        Toast.makeText(getActivity(), "onGroupInfoAvailable", Toast.LENGTH_SHORT).show();
         this.group = group;
     }
 }

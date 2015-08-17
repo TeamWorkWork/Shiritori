@@ -33,7 +33,7 @@ public class ModeSelectFragment extends Fragment implements View.OnClickListener
 
     private void createRoomBtnClicked() {
         getFragmentManager().beginTransaction()
-                .replace(R.id.container_root, new RoomFragment())
+                .replace(R.id.container_root, new MasterRoomFragment())
                 .addToBackStack(null)
                 .commit();
     }

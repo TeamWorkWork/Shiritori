@@ -21,7 +21,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 import java.util.List;
 
-public class RoomFragment extends ListFragment
+public class MasterRoomFragment extends ListFragment
         implements OnReceiveListener, View.OnClickListener, ConnectionInfoListener,
         GroupInfoListener, DeviceActionListener {
 

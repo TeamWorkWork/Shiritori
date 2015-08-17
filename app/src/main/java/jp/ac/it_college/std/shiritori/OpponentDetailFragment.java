@@ -8,23 +8,28 @@ import android.net.NetworkInfo;
 import android.net.wifi.WpsInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
+import android.net.wifi.p2p.WifiP2pManager.GroupInfoListener;
 import android.os.Bundle;
 import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class OpponentDetailFragment extends Fragment
-        implements View.OnClickListener, ConnectionInfoListener, OnReceiveListener, DeviceActionListener{
+        implements View.OnClickListener, ConnectionInfoListener, OnReceiveListener,
+        DeviceActionListener, GroupInfoListener {
 
     private WifiP2pDevice device;
     private ProgressDialog  progressDialog;
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
+    private WifiP2pGroup group;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -76,6 +81,20 @@ public class OpponentDetailFragment extends Fragment
         }
     }
 
+    //ルーム入室処理
+    private void enterRoom(WifiP2pInfo info, WifiP2pGroup group) {
+        Bundle bundle = new Bundle();
+        bundle.putParcelable(MainActivity.WIFI_INFO, info);
+        bundle.putParcelable(MainActivity.WIFI_GROUP, group);
+
+        RoomFragment fragment = new RoomFragment();
+        fragment.setArguments(bundle);
+
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container_root, fragment)
+                .commit();
+    }
+
     /*
     Implemented ConnectionInfoListener
      */
@@ -84,10 +103,10 @@ public class OpponentDetailFragment extends Fragment
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
+        Toast.makeText(getActivity(), "onConnectionInfoAvailable", Toast.LENGTH_SHORT).show();
 
-        getFragmentManager().beginTransaction()
-                .replace(R.id.container_root, new RoomFragment())
-                .commit();
+        //ルーム入室
+        enterRoom(info, group);
     }
 
     /*
@@ -196,6 +215,7 @@ public class OpponentDetailFragment extends Fragment
                 .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
 
         if (networkInfo.isConnected()) {
+            manager.requestGroupInfo(channel, this);
             manager.requestConnectionInfo(channel, this);
         } else {
             resetViews();
@@ -205,5 +225,14 @@ public class OpponentDetailFragment extends Fragment
     @Override
     public void onDeviceChanged(Intent intent) {
 
+    }
+
+    /*
+    Implemented GroupInfoListener
+     */
+    @Override
+    public void onGroupInfoAvailable(WifiP2pGroup group) {
+        Toast.makeText(getActivity(), "onGroupInfoAvailable", Toast.LENGTH_SHORT).show();
+        this.group = group;
     }
 }

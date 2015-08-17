@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -109,14 +110,17 @@ public class RoomFragment extends ListFragment
      */
     @Override
     public void onStateChanged(Intent intent) {
+        Toast.makeText(getActivity(), "onStateChanged", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onPeersChanged(Intent intent) {
+        Toast.makeText(getActivity(), "onPeersChanged", Toast.LENGTH_SHORT).show();
     }
 
     @Override
     public void onConnectionChanged(Intent intent) {
+        Toast.makeText(getActivity(), "onConnectionChanged", Toast.LENGTH_SHORT).show();
         if (manager == null) {
             return;
         }
@@ -136,6 +140,7 @@ public class RoomFragment extends ListFragment
 
     @Override
     public void onDeviceChanged(Intent intent) {
+        Toast.makeText(getActivity(), "onDeviceChanged", Toast.LENGTH_SHORT).show();
     }
 
     /*
@@ -143,6 +148,7 @@ public class RoomFragment extends ListFragment
      */
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
+        Toast.makeText(getActivity(), "onConnectionInfoAvailable", Toast.LENGTH_SHORT).show();
         this.info = info;
     }
 
@@ -151,6 +157,7 @@ public class RoomFragment extends ListFragment
      */
     @Override
     public void onGroupInfoAvailable(WifiP2pGroup group) {
+        Toast.makeText(getActivity(), "onGroupInfoAvailable", Toast.LENGTH_SHORT).show();
         peers.clear();
         if (info.isGroupOwner) {
             peers.addAll(group.getClientList());

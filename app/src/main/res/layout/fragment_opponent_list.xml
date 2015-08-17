@@ -17,7 +17,7 @@
                 android:id="@+id/btn_discover"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
-                android:layout_weight="0.5"
+                android:layout_weight="0.4"
                 android:text="@string/discover"
                 />
 
@@ -25,8 +25,16 @@
                 android:id="@+id/btn_wifi_setting"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
-                android:layout_weight="0.5"
+                android:layout_weight="0.4"
                 android:text="@string/setting"
+                />
+
+            <Button
+                android:id="@+id/btn_to_title"
+                android:layout_width="0dp"
+                android:layout_height="50dp"
+                android:layout_weight="0.4"
+                android:text="@string/to_title"
                 />
 
         </LinearLayout>

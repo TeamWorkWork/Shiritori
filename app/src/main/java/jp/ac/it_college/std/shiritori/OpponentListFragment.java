@@ -41,6 +41,8 @@ public class OpponentListFragment extends ListFragment
         //各ボタンのOnClickListenerを設定
         getView().findViewById(R.id.btn_wifi_setting).setOnClickListener(this);
         getView().findViewById(R.id.btn_discover).setOnClickListener(this);
+        getView().findViewById(R.id.btn_to_title).setOnClickListener(this);
+
 
         //アダプターの設定
         setListAdapter(new WiFiPeerListAdapter(getActivity(), R.layout.row_devices, peers));
@@ -114,7 +116,17 @@ public class OpponentListFragment extends ListFragment
             case R.id.btn_discover:
                 //検索ボタンが押された時の処理
                 onDiscover();
+                break;
+            case R.id.btn_to_title:
+                onClickToTitle();
         }
+    }
+
+    private void onClickToTitle() {
+        //タイトル画面へ戻る
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container_root, new TitleFragment())
+                .commit();
     }
 
     public void onInitiateDiscovery() {

@@ -26,5 +26,6 @@
     <string name="game_start">ゲーム開始</string>
     <string name="room_exit">退室</string>
     <string name="game_ready">準備完了</string>
+    <string name="to_title">タイトル</string>
 
 </resources>

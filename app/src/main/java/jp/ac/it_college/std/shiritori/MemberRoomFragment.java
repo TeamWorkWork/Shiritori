@@ -22,12 +22,6 @@ public class MemberRoomFragment extends ListFragment
     private List<WifiP2pDevice> peers = new ArrayList<>();
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
@@ -43,9 +37,18 @@ public class MemberRoomFragment extends ListFragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
+        //リスナー登録
+        ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
         return inflater.inflate(R.layout.fragment_member_room, container, false);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        //リスナー削除
+        ((MainActivity) getActivity()).getEventManager().removeOnReceiveListener(this);
+    }
 
     @Override
     public void onClick(View v) {

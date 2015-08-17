@@ -30,19 +30,11 @@ public class OpponentListFragment extends ListFragment
     private WifiP2pManager.Channel channel;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        //EventManagerの設定
-        ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState == null) {
             getFragmentManager().beginTransaction()
-                    .add(R.id.container_detail, new OpponentDetailFragment())
+                    .replace(R.id.container_detail, new OpponentDetailFragment())
                     .commit();
         }
 
@@ -61,8 +53,24 @@ public class OpponentListFragment extends ListFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        //リスナー登録
+        ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_opponent_list, container, false);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        //リスナー削除
+        ((MainActivity) getActivity()).getEventManager().removeOnReceiveListener(this);
+
+        //OpponentDetailFragmentを削除
+        OpponentDetailFragment fragment =
+                (OpponentDetailFragment) getFragmentManager().findFragmentById(R.id.container_detail);
+        getFragmentManager().beginTransaction()
+                .remove(fragment)
+                .commit();
     }
 
     private static String getDeviceStatus(int deviceStatus) {

@@ -46,7 +46,6 @@ public class MainActivity extends Activity
         channel = manager.initialize(this, getMainLooper(), null);
 
         eventManager = new EventManager();
-        eventManager.addOnReceiveListener(this);
     }
 
     @Override
@@ -54,6 +53,8 @@ public class MainActivity extends Activity
         super.onResume();
         receiver = new WiFiDirectBroadcastReceiver(getEventManager());
         registerReceiver(receiver, intentFilter);
+        //リスナー登録
+        eventManager.addOnReceiveListener(this);
     }
 
     @Override
@@ -61,6 +62,8 @@ public class MainActivity extends Activity
         super.onPause();
         disconnect();
         unregisterReceiver(receiver);
+        //リスナー削除
+        eventManager.removeOnReceiveListener(this);
     }
 
     public WifiP2pDevice getDevice() {

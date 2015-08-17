@@ -32,13 +32,6 @@ public class OpponentDetailFragment extends Fragment
     private WifiP2pGroup group;
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        //EventManagerのセット
-        ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         //各ボタンのクリックリスナーをセット
@@ -52,8 +45,18 @@ public class OpponentDetailFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        //リスナー登録
+        ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
+
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_opponent_detail, container, false);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        //リスナー削除
+        ((MainActivity) getActivity()).getEventManager().removeOnReceiveListener(this);
     }
 
     private void onClickDisconnect() {

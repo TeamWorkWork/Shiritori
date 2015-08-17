@@ -4,6 +4,7 @@ package jp.ac.it_college.std.shiritori;
 import android.app.ListFragment;
 import android.content.Intent;
 import android.net.NetworkInfo;
+import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pInfo;
@@ -21,7 +22,7 @@ import java.util.List;
 
 public class RoomFragment extends ListFragment
         implements OnReceiveListener, View.OnClickListener, ConnectionInfoListener,
-        GroupInfoListener {
+        GroupInfoListener, DeviceActionListener {
 
     private WifiP2pDevice device;
     private WifiP2pManager manager;
@@ -57,6 +58,12 @@ public class RoomFragment extends ListFragment
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_room, container, false);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        disconnect();
     }
 
     @Override
@@ -149,5 +156,36 @@ public class RoomFragment extends ListFragment
         ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
     }
 
+    /*
+    Implemented DeviceActionListener
+     */
+    @Override
+    public void cancelDisconnect() {
 
+    }
+
+    @Override
+    public void connect(WifiP2pConfig config) {
+
+    }
+
+    @Override
+    public void disconnect() {
+        manager.removeGroup(channel, new WifiP2pManager.ActionListener() {
+            @Override
+            public void onSuccess() {
+
+            }
+
+            @Override
+            public void onFailure(int reason) {
+
+            }
+        });
+    }
+
+    @Override
+    public void showDetails(WifiP2pDevice device) {
+
+    }
 }

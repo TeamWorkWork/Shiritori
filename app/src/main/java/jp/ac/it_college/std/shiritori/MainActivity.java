@@ -1,20 +1,14 @@
 package jp.ac.it_college.std.shiritori;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pManager;
-import android.net.wifi.p2p.WifiP2pManager.PeerListListener;
 import android.os.Bundle;
-import android.provider.Settings;
-import android.widget.Toast;
 
 public class MainActivity extends Activity
         implements OnReceiveListener, DeviceActionListener {

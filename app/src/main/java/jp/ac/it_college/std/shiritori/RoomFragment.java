@@ -78,6 +78,10 @@ public class RoomFragment extends ListFragment
     }
 
     private void onClickRoomExit() {
+        //タイトル画面に戻る
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container_root, new TitleFragment())
+                .commit();
     }
 
     private void onClickGameStart() {

@@ -84,6 +84,10 @@ public class OpponentDetailFragment extends Fragment
         if (progressDialog != null && progressDialog.isShowing()) {
             progressDialog.dismiss();
         }
+
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container_root, new RoomFragment())
+                .commit();
     }
 
     /*

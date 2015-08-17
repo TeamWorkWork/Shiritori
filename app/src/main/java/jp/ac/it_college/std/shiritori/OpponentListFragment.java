@@ -62,15 +62,19 @@ public class OpponentListFragment extends ListFragment
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        //リスナー削除
-        ((MainActivity) getActivity()).getEventManager().removeOnReceiveListener(this);
-
         //OpponentDetailFragmentを削除
         OpponentDetailFragment fragment =
                 (OpponentDetailFragment) getFragmentManager().findFragmentById(R.id.container_detail);
-        getFragmentManager().beginTransaction()
-                .remove(fragment)
-                .commit();
+
+        if (fragment != null && fragment.isAdded()) {
+            getFragmentManager().beginTransaction()
+                    .remove(fragment)
+                    .commit();
+        }
+
+        //リスナー削除
+        ((MainActivity) getActivity()).getEventManager().removeOnReceiveListener(this);
+
     }
 
     private static String getDeviceStatus(int deviceStatus) {

@@ -24,5 +24,6 @@
     <string name="lbl_opponents">対戦者</string>
     <string name="empty_message">対戦者待ち</string>
     <string name="game_start">ゲーム開始</string>
+    <string name="room_exit">退室</string>
 
 </resources>

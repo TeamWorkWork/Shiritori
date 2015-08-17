@@ -93,11 +93,25 @@
                 android:indeterminate="false" />
         </LinearLayout>
 
-        <Button
-            android:id="@+id/btn_game_start"
+        <LinearLayout
+            android:layout_gravity="bottom"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:text="@string/game_start" />
+            android:orientation="horizontal" >
+            <Button
+                android:id="@+id/btn_game_start"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/game_start" />
+
+            <Button
+                android:id="@+id/btn_room_exit"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.5"
+                android:text="@string/room_exit" />
+
+        </LinearLayout>
     </FrameLayout>
 </LinearLayout>

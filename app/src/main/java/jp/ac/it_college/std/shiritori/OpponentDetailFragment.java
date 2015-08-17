@@ -87,7 +87,7 @@ public class OpponentDetailFragment extends Fragment
         bundle.putParcelable(MainActivity.WIFI_INFO, info);
         bundle.putParcelable(MainActivity.WIFI_GROUP, group);
 
-        MasterRoomFragment fragment = new MasterRoomFragment();
+        MemberRoomFragment fragment = new MemberRoomFragment();
         fragment.setArguments(bundle);
 
         getFragmentManager().beginTransaction()

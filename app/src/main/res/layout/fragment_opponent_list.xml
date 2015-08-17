@@ -52,7 +52,7 @@
     <FrameLayout
         android:id="@+id/container_detail"
         android:layout_width="match_parent"
-        android:layout_height="250dp"
+        android:layout_height="300dp"
         android:layout_gravity="bottom" />
 
 </FrameLayout>

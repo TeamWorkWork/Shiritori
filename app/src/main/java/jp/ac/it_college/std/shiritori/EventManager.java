@@ -13,6 +13,10 @@ public class EventManager implements OnReceiveListener {
         listeners.add(listener);
     }
 
+    public void removeOnReceiveListener(OnReceiveListener listener) {
+        listeners.remove(listener);
+    }
+
     /*
     Implemented OnReceiveListener
      */

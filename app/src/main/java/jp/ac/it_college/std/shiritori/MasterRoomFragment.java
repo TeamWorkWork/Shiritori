@@ -52,7 +52,7 @@ public class MasterRoomFragment extends ListFragment
                              Bundle savedInstanceState) {
         //リスナー登録
         ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
-        return inflater.inflate(R.layout.fragment_room, container, false);
+        return inflater.inflate(R.layout.fragment_master_room, container, false);
     }
 
     @Override

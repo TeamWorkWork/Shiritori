@@ -5,11 +5,14 @@ import android.app.ListFragment;
 import android.content.Intent;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
+import android.net.wifi.p2p.WifiP2pGroup;
+import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,17 +23,30 @@ public class MemberRoomFragment extends ListFragment
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
     private List<WifiP2pDevice> peers = new ArrayList<>();
+    private WifiP2pDevice device;
+    private WifiP2pGroup group;
+    private WifiP2pInfo info;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
+        this.device = ((MainActivity) getActivity()).getDevice();
+        ((TextView) getView().findViewById(R.id.my_name)).setText(device.deviceName);
         getView().findViewById(R.id.btn_game_ready).setOnClickListener(this);
         getView().findViewById(R.id.btn_room_exit).setOnClickListener(this);
 
         setListAdapter(new WiFiPeerListAdapter(getActivity(), R.layout.row_devices, peers));
         manager = ((MainActivity) getActivity()).getManager();
         channel = ((MainActivity) getActivity()).getChannel();
+
+        if (getArguments() != null) {
+            group = getArguments().getParcelable(MainActivity.WIFI_GROUP);
+            info = getArguments().getParcelable(MainActivity.WIFI_INFO);
+        }
+
+        //対戦相手をリストにセット
+        setOpponents(info, group);
     }
 
     @Override
@@ -59,6 +75,16 @@ public class MemberRoomFragment extends ListFragment
                 onClickRoomExit();
                 break;
         }
+    }
+
+    private void setOpponents(WifiP2pInfo info, WifiP2pGroup group) {
+        peers.clear();
+        if (info.isGroupOwner) {
+         peers.addAll(group.getClientList());
+        } else {
+            peers.add(group.getOwner());
+        }
+        ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
     }
 
     private void onClickRoomExit() {
@@ -92,7 +118,7 @@ public class MemberRoomFragment extends ListFragment
     }
 
     /*
-    Implemeted DeviceActionListener
+    Implemented DeviceActionListener
      */
     @Override
     public void cancelDisconnect() {

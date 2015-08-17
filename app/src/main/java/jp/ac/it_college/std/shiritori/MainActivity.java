@@ -21,6 +21,9 @@ public class MainActivity extends Activity
     private boolean isWifiP2pEnabled = false;
     private EventManager eventManager;
 
+    public static final String WIFI_INFO = "WIFI_INFO";
+    public static final String WIFI_GROUP = "WIFI_GROUP";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -43,6 +43,7 @@ public class RoomFragment extends ListFragment
         ((TextView) getView().findViewById(R.id.my_name)).setText(device.deviceName);
 
         getView().findViewById(R.id.btn_game_start).setOnClickListener(this);
+        getView().findViewById(R.id.btn_room_exit).setOnClickListener(this);
 
         setListAdapter(new WiFiPeerListAdapter(getActivity(), R.layout.row_devices, peers));
         manager = ((MainActivity) getActivity()).getManager();
@@ -64,10 +65,16 @@ public class RoomFragment extends ListFragment
             case R.id.btn_game_start:
                 onClickGameStart();
                 break;
+            case R.id.btn_room_exit:
+                onClickRoomExit();
         }
     }
 
+    private void onClickRoomExit() {
+    }
+
     private void onClickGameStart() {
+
     }
 
     private void discover() {

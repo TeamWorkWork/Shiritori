@@ -3,6 +3,7 @@ package jp.ac.it_college.std.shiritori;
 
 import android.app.ListFragment;
 import android.content.Intent;
+import android.net.NetworkInfo;
 import android.net.wifi.p2p.WifiP2pConfig;
 import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pGroup;
@@ -43,10 +44,10 @@ public class MemberRoomFragment extends ListFragment
         if (getArguments() != null) {
             group = getArguments().getParcelable(MainActivity.WIFI_GROUP);
             info = getArguments().getParcelable(MainActivity.WIFI_INFO);
+            //対戦相手をリストにセット
+            setOpponents(info, group);
         }
 
-        //対戦相手をリストにセット
-        setOpponents(info, group);
     }
 
     @Override
@@ -72,7 +73,7 @@ public class MemberRoomFragment extends ListFragment
             case R.id.btn_game_ready:
                 break;
             case R.id.btn_room_exit:
-                onClickRoomExit();
+                roomExit();
                 break;
         }
     }
@@ -87,7 +88,7 @@ public class MemberRoomFragment extends ListFragment
         ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
     }
 
-    private void onClickRoomExit() {
+    private void roomExit() {
         disconnect();
         getFragmentManager().beginTransaction()
                 .replace(R.id.container_root, new OpponentListFragment())
@@ -109,7 +110,16 @@ public class MemberRoomFragment extends ListFragment
 
     @Override
     public void onConnectionChanged(Intent intent) {
+        if (manager == null) {
+            return;
+        }
 
+        NetworkInfo networkInfo = (NetworkInfo) intent
+                .getParcelableExtra(WifiP2pManager.EXTRA_NETWORK_INFO);
+
+        if (!networkInfo.isConnected()) {
+            roomExit();
+        }
     }
 
     @Override

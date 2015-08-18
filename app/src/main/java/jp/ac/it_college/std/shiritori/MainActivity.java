@@ -23,6 +23,10 @@ public class MainActivity extends Activity
 
     public static final String WIFI_INFO = "WIFI_INFO";
     public static final String WIFI_GROUP = "WIFI_GROUP";
+    public static final int SERVER_PORT = 4545;
+    public static final int MESSAGE_READ = 0x400 + 1;
+    public static final int MY_HANDLE = 0x400 + 2;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

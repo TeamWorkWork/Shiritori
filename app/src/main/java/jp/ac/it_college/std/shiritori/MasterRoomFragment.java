@@ -91,6 +91,17 @@ public class MasterRoomFragment extends ListFragment
 
     }
 
+    private void onMessage(String message) {
+        View view = getView();
+
+        //TODO: エラー原因を特定
+        if (view != null) {
+            if (message.equals(MainActivity.GAME_READY)) {
+                ((TextView) view.findViewById(R.id.device_details)).setText("準備完了");
+            }
+        }
+    }
+
     public Handler getHandler() {
         return handler;
     }
@@ -167,7 +178,9 @@ public class MasterRoomFragment extends ListFragment
         } else {
             thread = new ClientSocketHandler(getHandler(), info.groupOwnerAddress);
             thread.start();
-        }    }
+        }
+    }
+
 
     /*
     Implemented GroupInfoListener
@@ -220,7 +233,10 @@ public class MasterRoomFragment extends ListFragment
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
             case MainActivity.MESSAGE_READ:
-
+                byte[] readBuf = (byte[]) msg.obj;
+                // construct a string from the valid bytes in the buffer
+                String readMessage = new String(readBuf, 0, msg.arg1);
+                onMessage(readMessage);
                 break;
 
             case MainActivity.MY_HANDLE:

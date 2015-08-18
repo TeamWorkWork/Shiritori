@@ -88,10 +88,17 @@ public class MemberRoomFragment extends ListFragment
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.btn_game_ready:
+                onClickGameReady();
                 break;
             case R.id.btn_room_exit:
                 roomExit();
                 break;
+        }
+    }
+
+    private void onClickGameReady() {
+        if (chatManager != null) {
+            chatManager.write(MainActivity.GAME_READY.getBytes());
         }
     }
 

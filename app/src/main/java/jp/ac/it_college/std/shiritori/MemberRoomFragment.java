@@ -9,17 +9,22 @@ import android.net.wifi.p2p.WifiP2pDevice;
 import android.net.wifi.p2p.WifiP2pGroup;
 import android.net.wifi.p2p.WifiP2pInfo;
 import android.net.wifi.p2p.WifiP2pManager;
+import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MemberRoomFragment extends ListFragment
-        implements OnReceiveListener, View.OnClickListener, DeviceActionListener {
+        implements OnReceiveListener, View.OnClickListener,
+        DeviceActionListener, ConnectionInfoListener, Handler.Callback {
 
     private WifiP2pManager manager;
     private WifiP2pManager.Channel channel;
@@ -27,6 +32,8 @@ public class MemberRoomFragment extends ListFragment
     private WifiP2pDevice device;
     private WifiP2pGroup group;
     private WifiP2pInfo info;
+    private Handler handler;
+    private ChatManager chatManager;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -40,12 +47,14 @@ public class MemberRoomFragment extends ListFragment
         setListAdapter(new WiFiPeerListAdapter(getActivity(), R.layout.row_devices, peers));
         manager = ((MainActivity) getActivity()).getManager();
         channel = ((MainActivity) getActivity()).getChannel();
+        handler = new Handler(this);
 
         if (getArguments() != null) {
             group = getArguments().getParcelable(MainActivity.WIFI_GROUP);
             info = getArguments().getParcelable(MainActivity.WIFI_INFO);
             //対戦相手をリストにセット
             setOpponents(info, group);
+            onConnectionInfoAvailable(info);
         }
 
     }
@@ -65,6 +74,14 @@ public class MemberRoomFragment extends ListFragment
         super.onDestroyView();
         //リスナー削除
         ((MainActivity) getActivity()).getEventManager().removeOnReceiveListener(this);
+    }
+
+    public Handler getHandler() {
+        return handler;
+    }
+
+    public void setChatManager(ChatManager chatManager) {
+        this.chatManager = chatManager;
     }
 
     @Override
@@ -158,5 +175,37 @@ public class MemberRoomFragment extends ListFragment
     @Override
     public void showDetails(WifiP2pDevice device) {
 
+    }
+
+    @Override
+    public void onConnectionInfoAvailable(WifiP2pInfo info) {
+        Thread thread;
+
+        if (info.isGroupOwner) {
+            try {
+                thread = new GroupOwnerSocketHandler(getHandler());
+                thread.start();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        } else {
+            thread = new ClientSocketHandler(getHandler(), info.groupOwnerAddress);
+            thread.start();
+        }
+    }
+
+    @Override
+    public boolean handleMessage(Message msg) {
+        switch (msg.what) {
+            case MainActivity.MESSAGE_READ:
+
+                break;
+
+            case MainActivity.MY_HANDLE:
+                ChatManager obj = (ChatManager) msg.obj;
+                setChatManager(obj);
+                break;
+        }
+        return true;
     }
 }

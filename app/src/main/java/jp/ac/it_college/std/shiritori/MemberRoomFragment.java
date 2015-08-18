@@ -34,6 +34,7 @@ public class MemberRoomFragment extends ListFragment
     private WifiP2pInfo info;
     private Handler handler;
     private ChatManager chatManager;
+    private Thread thread;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -74,10 +75,19 @@ public class MemberRoomFragment extends ListFragment
         super.onDestroyView();
         //リスナー削除
         ((MainActivity) getActivity()).getEventManager().removeOnReceiveListener(this);
+        getHandler().removeCallbacks(getThread());
     }
 
     public Handler getHandler() {
         return handler;
+    }
+
+    public Thread getThread() {
+        return thread;
+    }
+
+    public ChatManager getChatManager() {
+        return chatManager;
     }
 
     public void setChatManager(ChatManager chatManager) {
@@ -187,7 +197,6 @@ public class MemberRoomFragment extends ListFragment
 
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
-        Thread thread;
 
         if (info.isGroupOwner) {
             try {

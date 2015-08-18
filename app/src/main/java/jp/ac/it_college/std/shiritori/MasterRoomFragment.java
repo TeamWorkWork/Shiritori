@@ -92,13 +92,9 @@ public class MasterRoomFragment extends ListFragment
     }
 
     private void onMessage(String message) {
-        View view = getView();
-
-        //TODO: エラー原因を特定
-        if (view != null) {
-            if (message.equals(MainActivity.GAME_READY)) {
-                ((TextView) view.findViewById(R.id.device_details)).setText("準備完了");
-            }
+        //TODO:ルーム再作成時に準備完了をおした場合エラー落ちする原因を特定
+        if (message.equals(MainActivity.GAME_READY)) {
+            ((TextView) getView().findViewById(R.id.device_details)).setText(R.string.game_ready);
         }
     }
 

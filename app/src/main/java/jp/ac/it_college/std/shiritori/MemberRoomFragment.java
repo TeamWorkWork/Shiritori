@@ -99,6 +99,7 @@ public class MemberRoomFragment extends ListFragment
     private void onClickGameReady() {
         if (chatManager != null) {
             chatManager.write(MainActivity.GAME_READY.getBytes());
+            ((TextView) getView().findViewById(R.id.my_status)).setText(R.string.game_ready);
         }
     }
 

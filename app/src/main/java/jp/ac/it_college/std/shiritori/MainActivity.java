@@ -26,6 +26,7 @@ public class MainActivity extends Activity
     public static final int SERVER_PORT = 4545;
     public static final int MESSAGE_READ = 0x400 + 1;
     public static final int MY_HANDLE = 0x400 + 2;
+    public static final String GAME_READY = "GAME_READY_OK";
 
 
     @Override

@@ -13,10 +13,13 @@ import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.net.wifi.p2p.WifiP2pManager.GroupInfoListener;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ListView;
 import android.widget.TextView;
 
 import java.io.IOException;
@@ -34,6 +37,9 @@ public class MasterRoomFragment extends ListFragment
     private List<WifiP2pDevice> peers = new ArrayList<>();
     private Handler handler;
     private ChatManager chatManager;
+    private View contentView;
+    private Thread thread;
+
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -58,15 +64,16 @@ public class MasterRoomFragment extends ListFragment
                              Bundle savedInstanceState) {
         //リスナー登録
         ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
-        return inflater.inflate(R.layout.fragment_master_room, container, false);
+        contentView = inflater.inflate(R.layout.fragment_master_room, container, false);
+        return contentView;
     }
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
-        disconnect();
         //リスナー削除
         ((MainActivity) getActivity()).getEventManager().removeOnReceiveListener(this);
+        getHandler().removeCallbacks(getThread());
+        super.onDestroyView();
     }
 
     @Override
@@ -82,6 +89,7 @@ public class MasterRoomFragment extends ListFragment
 
     private void onClickRoomExit() {
         //タイトル画面に戻る
+        disconnect();
         getFragmentManager().beginTransaction()
                 .replace(R.id.container_root, new TitleFragment())
                 .commit();
@@ -94,13 +102,22 @@ public class MasterRoomFragment extends ListFragment
     private void onMessage(String message) {
         //TODO:ルーム再作成時に準備完了をおした場合エラー落ちする原因を特定
         if (message.equals(MainActivity.GAME_READY)) {
-            ((TextView) getView().findViewById(R.id.device_details)).setText(R.string.game_ready);
+            TextView view = (TextView) getView().findViewById(R.id.device_details);
+            view.setText(R.string.game_ready);
             getView().findViewById(R.id.btn_game_start).setEnabled(true);
         }
     }
 
     public Handler getHandler() {
         return handler;
+    }
+
+    public Thread getThread() {
+        return thread;
+    }
+
+    public ChatManager getChatManager() {
+        return chatManager;
     }
 
     public void setChatManager(ChatManager chatManager) {
@@ -163,7 +180,6 @@ public class MasterRoomFragment extends ListFragment
     @Override
     public void onConnectionInfoAvailable(WifiP2pInfo info) {
         this.info = info;
-        Thread thread;
 
         if (info.isGroupOwner) {
             try {
@@ -240,6 +256,7 @@ public class MasterRoomFragment extends ListFragment
                 ChatManager obj = (ChatManager) msg.obj;
                 setChatManager(obj);
                 break;
+
         }
         return true;
     }

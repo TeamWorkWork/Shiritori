@@ -37,7 +37,6 @@ public class MasterRoomFragment extends ListFragment
     private List<WifiP2pDevice> peers = new ArrayList<>();
     private Handler handler;
     private ChatManager chatManager;
-    private View contentView;
     private Thread thread;
 
 
@@ -64,8 +63,7 @@ public class MasterRoomFragment extends ListFragment
                              Bundle savedInstanceState) {
         //リスナー登録
         ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
-        contentView = inflater.inflate(R.layout.fragment_master_room, container, false);
-        return contentView;
+        return inflater.inflate(R.layout.fragment_master_room, container, false);
     }
 
     @Override

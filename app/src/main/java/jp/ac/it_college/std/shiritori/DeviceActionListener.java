@@ -11,5 +11,6 @@ public interface DeviceActionListener {
 
     void disconnect();
 
-    void searchPeer();
+    void showDetails(WifiP2pDevice device);
+
 }

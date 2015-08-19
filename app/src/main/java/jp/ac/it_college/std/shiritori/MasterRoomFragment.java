@@ -42,14 +42,18 @@ public class MasterRoomFragment extends ListFragment
 
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        contentView = inflater.inflate(R.layout.fragment_master_room, container, false);
+
+        //リスナー登録
+        ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
 
         this.device = ((MainActivity) getActivity()).getDevice();
-        ((TextView) getView().findViewById(R.id.my_name)).setText(device.deviceName);
+        ((TextView) contentView.findViewById(R.id.my_name)).setText(device.deviceName);
 
-        getView().findViewById(R.id.btn_game_start).setOnClickListener(this);
-        getView().findViewById(R.id.btn_room_exit).setOnClickListener(this);
+        contentView.findViewById(R.id.btn_game_start).setOnClickListener(this);
+        contentView.findViewById(R.id.btn_room_exit).setOnClickListener(this);
 
         setListAdapter(new WiFiPeerListAdapter(getActivity(), R.layout.row_devices, peers));
         manager = ((MainActivity) getActivity()).getManager();
@@ -57,14 +61,7 @@ public class MasterRoomFragment extends ListFragment
         handler = new Handler(this);
 
         discover();
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        //リスナー登録
-        ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
-        contentView = inflater.inflate(R.layout.fragment_master_room, container, false);
         return contentView;
     }
 

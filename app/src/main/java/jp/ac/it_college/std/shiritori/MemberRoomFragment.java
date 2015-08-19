@@ -35,15 +35,22 @@ public class MemberRoomFragment extends ListFragment
     private Handler handler;
     private ChatManager chatManager;
     private Thread thread;
+    private View contentView;
+
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+
+        contentView = inflater.inflate(R.layout.fragment_master_room, container, false);
+
+        //リスナー登録
+        ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
 
         this.device = ((MainActivity) getActivity()).getDevice();
-        ((TextView) getView().findViewById(R.id.my_name)).setText(device.deviceName);
-        getView().findViewById(R.id.btn_game_ready).setOnClickListener(this);
-        getView().findViewById(R.id.btn_room_exit).setOnClickListener(this);
+        ((TextView) contentView.findViewById(R.id.my_name)).setText(device.deviceName);
+        contentView.findViewById(R.id.btn_game_ready).setOnClickListener(this);
+        contentView.findViewById(R.id.btn_room_exit).setOnClickListener(this);
 
         setListAdapter(new WiFiPeerListAdapter(getActivity(), R.layout.row_devices, peers));
         manager = ((MainActivity) getActivity()).getManager();
@@ -58,16 +65,7 @@ public class MemberRoomFragment extends ListFragment
             onConnectionInfoAvailable(info);
         }
 
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-
-        //リスナー登録
-        ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
-        return inflater.inflate(R.layout.fragment_member_room, container, false);
+        return contentView;
     }
 
     @Override
@@ -109,7 +107,7 @@ public class MemberRoomFragment extends ListFragment
     private void onClickGameReady() {
         if (chatManager != null) {
             chatManager.write(MainActivity.GAME_READY.getBytes());
-            ((TextView) getView().findViewById(R.id.my_status)).setText(R.string.game_ready);
+            ((TextView) contentView.findViewById(R.id.my_status)).setText(R.string.game_ready);
         }
     }
 

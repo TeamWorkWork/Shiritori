@@ -13,14 +13,13 @@ import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.net.wifi.p2p.WifiP2pManager.GroupInfoListener;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -38,17 +37,20 @@ public class MasterRoomFragment extends ListFragment
     private Handler handler;
     private ChatManager chatManager;
     private Thread thread;
-
+    private View contentView;
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        contentView = inflater.inflate(R.layout.fragment_master_room, container, false);
 
+        //リスナー登録
+        ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
         this.device = ((MainActivity) getActivity()).getDevice();
-        ((TextView) getView().findViewById(R.id.my_name)).setText(device.deviceName);
+        ((TextView) contentView.findViewById(R.id.my_name)).setText(device.deviceName);
 
-        getView().findViewById(R.id.btn_game_start).setOnClickListener(this);
-        getView().findViewById(R.id.btn_room_exit).setOnClickListener(this);
+        contentView.findViewById(R.id.btn_game_start).setOnClickListener(this);
+        contentView.findViewById(R.id.btn_room_exit).setOnClickListener(this);
 
         setListAdapter(new WiFiPeerListAdapter(getActivity(), R.layout.row_devices, peers));
         manager = ((MainActivity) getActivity()).getManager();
@@ -56,22 +58,16 @@ public class MasterRoomFragment extends ListFragment
         handler = new Handler(this);
 
         discover();
-    }
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        //リスナー登録
-        ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
-        return inflater.inflate(R.layout.fragment_master_room, container, false);
+        return contentView;
     }
 
     @Override
     public void onDestroyView() {
-        super.onDestroyView();
         //リスナー削除
         ((MainActivity) getActivity()).getEventManager().removeOnReceiveListener(this);
-        getHandler().removeCallbacks(getThread());
+        getHandler().removeCallbacks(getChatManager());
+        super.onDestroyView();
     }
 
     @Override
@@ -94,15 +90,17 @@ public class MasterRoomFragment extends ListFragment
     }
 
     private void onClickGameStart() {
-
+        if (getChatManager() != null) {
+            getChatManager().write(MainActivity.GAME_START.getBytes());
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container_root, new ChatFragment())
+                    .commit();
+        }
     }
 
     private void onMessage(String message) {
-        //TODO:ルーム再作成時に準備完了をおした場合エラー落ちする原因を特定
         if (message.equals(MainActivity.GAME_READY)) {
-            TextView view = (TextView) getView().findViewById(R.id.device_details);
-            view.setText(R.string.game_ready);
-            getView().findViewById(R.id.btn_game_start).setEnabled(true);
+            Toast.makeText(getActivity(), MainActivity.GAME_READY, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -161,10 +159,12 @@ public class MasterRoomFragment extends ListFragment
         if (networkInfo.isConnected()) {
             manager.requestConnectionInfo(channel, this);
             manager.requestGroupInfo(channel, this);
+            contentView.findViewById(R.id.btn_game_start).setEnabled(true);
         } else {
             peers.clear();
             ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
             discover();
+            contentView.findViewById(R.id.btn_game_start).setEnabled(false);
         }
     }
 

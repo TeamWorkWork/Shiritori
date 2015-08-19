@@ -21,6 +21,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -39,7 +40,6 @@ public class MasterRoomFragment extends ListFragment
     private ChatManager chatManager;
     private View contentView;
     private Thread thread;
-
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -93,11 +93,14 @@ public class MasterRoomFragment extends ListFragment
     }
 
     private void onClickGameStart() {
-
+        if (getChatManager() != null) {
+            getChatManager().write(MainActivity.GAME_START.getBytes());
+        }
     }
 
     private void onMessage(String message) {
         if (message.equals(MainActivity.GAME_READY)) {
+            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -156,10 +159,14 @@ public class MasterRoomFragment extends ListFragment
         if (networkInfo.isConnected()) {
             manager.requestConnectionInfo(channel, this);
             manager.requestGroupInfo(channel, this);
+            //ゲーム開始ボタンを有効にする
+            contentView.findViewById(R.id.btn_game_start).setEnabled(true);
         } else {
             peers.clear();
             ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
             discover();
+            //ゲーム開始ボタンを無効にする
+            contentView.findViewById(R.id.btn_game_start).setEnabled(false);
         }
     }
 
@@ -248,6 +255,8 @@ public class MasterRoomFragment extends ListFragment
             case MainActivity.MY_HANDLE:
                 ChatManager obj = (ChatManager) msg.obj;
                 setChatManager(obj);
+
+
                 break;
 
         }

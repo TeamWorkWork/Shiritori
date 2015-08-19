@@ -17,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -41,8 +42,7 @@ public class MemberRoomFragment extends ListFragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-
-        contentView = inflater.inflate(R.layout.fragment_master_room, container, false);
+        contentView = inflater.inflate(R.layout.fragment_member_room, container, false);
 
         //リスナー登録
         ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
@@ -64,7 +64,6 @@ public class MemberRoomFragment extends ListFragment
             setOpponents(info, group);
             onConnectionInfoAvailable(info);
         }
-
         return contentView;
     }
 
@@ -105,9 +104,15 @@ public class MemberRoomFragment extends ListFragment
     }
 
     private void onClickGameReady() {
-        if (chatManager != null) {
-            chatManager.write(MainActivity.GAME_READY.getBytes());
+        if (getChatManager() != null) {
+            getChatManager().write(MainActivity.GAME_READY.getBytes());
             ((TextView) contentView.findViewById(R.id.my_status)).setText(R.string.game_ready);
+        }
+    }
+
+    private void onMessage(String message) {
+        if (message.equals(MainActivity.GAME_START)) {
+            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -213,7 +218,10 @@ public class MemberRoomFragment extends ListFragment
     public boolean handleMessage(Message msg) {
         switch (msg.what) {
             case MainActivity.MESSAGE_READ:
-
+                byte[] readBuf = (byte[]) msg.obj;
+                // construct a string from the valid bytes in the buffer
+                String readMessage = new String(readBuf, 0, msg.arg1);
+                onMessage(readMessage);
                 break;
 
             case MainActivity.MY_HANDLE:

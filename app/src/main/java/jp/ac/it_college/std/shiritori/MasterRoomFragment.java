@@ -100,11 +100,7 @@ public class MasterRoomFragment extends ListFragment
     }
 
     private void onMessage(String message) {
-        //TODO:ルーム再作成時に準備完了をおした場合エラー落ちする原因を特定
         if (message.equals(MainActivity.GAME_READY)) {
-            TextView view = (TextView) getView().findViewById(R.id.device_details);
-            view.setText(R.string.game_ready);
-            getView().findViewById(R.id.btn_game_start).setEnabled(true);
         }
     }
 

@@ -13,14 +13,14 @@ import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.net.wifi.p2p.WifiP2pManager.GroupInfoListener;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -40,31 +40,36 @@ public class MasterRoomFragment extends ListFragment
     private View contentView;
     private Thread thread;
 
+    private LinearLayout roomLayout;
+    private ListView chatListView;
+    private ChatMessageAdapter adapter;
+    private List<String> chatList = new ArrayList<>();
+    private TextView chatLine;
+    private boolean isGameRunning = false;
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        contentView = inflater.inflate(R.layout.fragment_master_room, container, false);
+
+        //リスナー登録
+        ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
 
         this.device = ((MainActivity) getActivity()).getDevice();
-        ((TextView) getView().findViewById(R.id.my_name)).setText(device.deviceName);
+        ((TextView) contentView.findViewById(R.id.my_name)).setText(device.deviceName);
 
-        getView().findViewById(R.id.btn_game_start).setOnClickListener(this);
-        getView().findViewById(R.id.btn_room_exit).setOnClickListener(this);
+        contentView.findViewById(R.id.btn_game_start).setOnClickListener(this);
+        contentView.findViewById(R.id.btn_room_exit).setOnClickListener(this);
 
         setListAdapter(new WiFiPeerListAdapter(getActivity(), R.layout.row_devices, peers));
         manager = ((MainActivity) getActivity()).getManager();
         channel = ((MainActivity) getActivity()).getChannel();
         handler = new Handler(this);
 
-        discover();
-    }
+        roomLayout = (LinearLayout) contentView.findViewById(R.id.layout_master_room);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        //リスナー登録
-        ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
-        contentView = inflater.inflate(R.layout.fragment_master_room, container, false);
+        discover();
+
         return contentView;
     }
 
@@ -84,6 +89,17 @@ public class MasterRoomFragment extends ListFragment
                 break;
             case R.id.btn_room_exit:
                 onClickRoomExit();
+                break;
+            case R.id.btn_send:
+                onClickSend();
+        }
+    }
+
+    private void onClickSend() {
+        if (getChatManager() != null) {
+            getChatManager().write(chatLine.getText().toString().getBytes());
+            pushMessage("Me: " + chatLine.getText().toString());
+            chatLine.setText("");
         }
     }
 
@@ -96,15 +112,36 @@ public class MasterRoomFragment extends ListFragment
     }
 
     private void onClickGameStart() {
+        if (getChatManager() != null) {
+            getChatManager().write(MainActivity.GAME_START.getBytes());
+            roomLayout.removeAllViews();
+            getActivity().getLayoutInflater().inflate(R.layout.fragment_chat, roomLayout);
 
+
+            //Sendボタンのクリックイベント
+            roomLayout.findViewById(R.id.btn_send).setOnClickListener(this);
+            roomLayout.findViewById(R.id.btn_room_exit).setOnClickListener(this);
+            chatLine = (TextView) roomLayout.findViewById(R.id.txtChatLine);
+            //アダプターの設定
+            adapter = new ChatMessageAdapter(getActivity(), android.R.id.text1, chatList);
+            //Chat用のListViewをセット
+            chatListView = (ListView) roomLayout.findViewById(R.id.list_chat);
+            chatListView.setAdapter(adapter);
+
+            isGameRunning = true;
+        }
+    }
+
+    private void pushMessage(String message) {
+        adapter.add(message);
+        adapter.notifyDataSetChanged();
     }
 
     private void onMessage(String message) {
-        //TODO:ルーム再作成時に準備完了をおした場合エラー落ちする原因を特定
         if (message.equals(MainActivity.GAME_READY)) {
-            TextView view = (TextView) getView().findViewById(R.id.device_details);
-            view.setText(R.string.game_ready);
-            getView().findViewById(R.id.btn_game_start).setEnabled(true);
+            Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+        } else if (adapter != null) {
+            pushMessage("Buddy " + message);
         }
     }
 
@@ -163,10 +200,20 @@ public class MasterRoomFragment extends ListFragment
         if (networkInfo.isConnected()) {
             manager.requestConnectionInfo(channel, this);
             manager.requestGroupInfo(channel, this);
+            //ゲーム開始ボタンを有効にする
+            contentView.findViewById(R.id.btn_game_start).setEnabled(true);
         } else {
             peers.clear();
             ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
             discover();
+
+            if (isGameRunning) {
+                //ルーム退室
+                onClickRoomExit();
+            } else {
+                //ゲーム開始ボタンを無効にする
+                contentView.findViewById(R.id.btn_game_start).setEnabled(false);
+            }
         }
     }
 

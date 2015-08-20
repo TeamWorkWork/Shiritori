@@ -27,5 +27,7 @@
     <string name="room_exit">退室</string>
     <string name="game_ready">準備完了</string>
     <string name="to_title">タイトル</string>
+    <string name="txt_hint">Type Message</string>
+    <string name="btn_send">Send</string>
 
 </resources>

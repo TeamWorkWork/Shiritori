@@ -41,7 +41,13 @@ public class MasterRoomFragment extends ListFragment
     private ChatManager chatManager;
     private View contentView;
     private Thread thread;
+
     private LinearLayout roomLayout;
+    private ListView chatListView;
+    private ChatMessageAdapter adapter;
+    private List<String> chatList = new ArrayList<>();
+    private TextView chatLine;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -85,6 +91,17 @@ public class MasterRoomFragment extends ListFragment
                 break;
             case R.id.btn_room_exit:
                 onClickRoomExit();
+                break;
+            case R.id.btn_send:
+                onClickSend();
+        }
+    }
+
+    private void onClickSend() {
+        if (getChatManager() != null) {
+            getChatManager().write(chatLine.getText().toString().getBytes());
+            pushMessage("Me: " + chatLine.getText().toString());
+            chatLine.setText("");
         }
     }
 
@@ -101,12 +118,29 @@ public class MasterRoomFragment extends ListFragment
             getChatManager().write(MainActivity.GAME_START.getBytes());
             roomLayout.removeAllViews();
             getActivity().getLayoutInflater().inflate(R.layout.fragment_chat, roomLayout);
+
+
+            //Sendボタンのクリックイベント
+            roomLayout.findViewById(R.id.btn_send).setOnClickListener(this);
+            chatLine = (TextView) roomLayout.findViewById(R.id.txtChatLine);
+            //アダプターの設定
+            adapter = new ChatMessageAdapter(getActivity(), android.R.id.text1, chatList);
+            //Chat用のListViewをセット
+            chatListView = (ListView) roomLayout.findViewById(R.id.list_chat);
+            chatListView.setAdapter(adapter);
         }
+    }
+
+    private void pushMessage(String message) {
+        adapter.add(message);
+        adapter.notifyDataSetChanged();
     }
 
     private void onMessage(String message) {
         if (message.equals(MainActivity.GAME_READY)) {
             Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+        } else if (adapter != null) {
+            pushMessage("Buddy " + message);
         }
     }
 

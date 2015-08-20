@@ -16,6 +16,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -37,6 +38,7 @@ public class MemberRoomFragment extends ListFragment
     private ChatManager chatManager;
     private Thread thread;
     private View contentView;
+    private LinearLayout roomLayout;
 
 
     @Override
@@ -56,6 +58,8 @@ public class MemberRoomFragment extends ListFragment
         manager = ((MainActivity) getActivity()).getManager();
         channel = ((MainActivity) getActivity()).getChannel();
         handler = new Handler(this);
+
+        roomLayout = (LinearLayout) contentView.findViewById(R.id.layout_member_room);
 
         if (getArguments() != null) {
             group = getArguments().getParcelable(MainActivity.WIFI_GROUP);
@@ -113,6 +117,8 @@ public class MemberRoomFragment extends ListFragment
     private void onMessage(String message) {
         if (message.equals(MainActivity.GAME_START)) {
             Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            roomLayout.removeAllViews();
+            getActivity().getLayoutInflater().inflate(R.layout.fragment_chat, roomLayout);
         }
     }
 

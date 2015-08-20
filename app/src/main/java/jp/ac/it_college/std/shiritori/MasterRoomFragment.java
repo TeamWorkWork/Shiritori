@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -40,6 +41,7 @@ public class MasterRoomFragment extends ListFragment
     private ChatManager chatManager;
     private View contentView;
     private Thread thread;
+    private LinearLayout roomLayout;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -59,6 +61,8 @@ public class MasterRoomFragment extends ListFragment
         manager = ((MainActivity) getActivity()).getManager();
         channel = ((MainActivity) getActivity()).getChannel();
         handler = new Handler(this);
+
+        roomLayout = (LinearLayout) contentView.findViewById(R.id.layout_master_room);
 
         discover();
 
@@ -95,6 +99,8 @@ public class MasterRoomFragment extends ListFragment
     private void onClickGameStart() {
         if (getChatManager() != null) {
             getChatManager().write(MainActivity.GAME_START.getBytes());
+            roomLayout.removeAllViews();
+            getActivity().getLayoutInflater().inflate(R.layout.fragment_chat, roomLayout);
         }
     }
 

@@ -151,6 +151,7 @@ public class MemberRoomFragment extends ListFragment
 
         //Sendボタンのクリックイベント
         roomLayout.findViewById(R.id.btn_send).setOnClickListener(this);
+        roomLayout.findViewById(R.id.btn_room_exit).setOnClickListener(this);
         chatLine = (TextView) roomLayout.findViewById(R.id.txtChatLine);
         //アダプターの設定
         adapter = new ChatMessageAdapter(getActivity(), android.R.id.text1, chatList);

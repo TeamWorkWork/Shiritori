@@ -13,9 +13,7 @@ import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.net.wifi.p2p.WifiP2pManager.GroupInfoListener;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,7 +45,7 @@ public class MasterRoomFragment extends ListFragment
     private ChatMessageAdapter adapter;
     private List<String> chatList = new ArrayList<>();
     private TextView chatLine;
-
+    private boolean isGameRunning = false;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -128,6 +126,8 @@ public class MasterRoomFragment extends ListFragment
             //Chat用のListViewをセット
             chatListView = (ListView) roomLayout.findViewById(R.id.list_chat);
             chatListView.setAdapter(adapter);
+
+            isGameRunning = true;
         }
     }
 
@@ -205,8 +205,14 @@ public class MasterRoomFragment extends ListFragment
             peers.clear();
             ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
             discover();
-            //ゲーム開始ボタンを無効にする
-            contentView.findViewById(R.id.btn_game_start).setEnabled(false);
+
+            if (isGameRunning) {
+                //ルーム退室
+                onClickRoomExit();
+            } else {
+                //ゲーム開始ボタンを無効にする
+                contentView.findViewById(R.id.btn_game_start).setEnabled(false);
+            }
         }
     }
 
@@ -295,8 +301,6 @@ public class MasterRoomFragment extends ListFragment
             case MainActivity.MY_HANDLE:
                 ChatManager obj = (ChatManager) msg.obj;
                 setChatManager(obj);
-
-
                 break;
 
         }

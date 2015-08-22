@@ -140,6 +140,11 @@ public class MasterRoomFragment extends ListFragment
     private void onMessage(String message) {
         if (message.equals(MainActivity.GAME_READY)) {
             Toast.makeText(getActivity(), message, Toast.LENGTH_SHORT).show();
+            //準備完了ボタンが押された場合、「準備完了」をセット
+            ((TextView) contentView.findViewById(R.id.device_details)).setText(R.string.game_ready);
+
+            //ゲーム開始ボタンを有効化
+            contentView.findViewById(R.id.btn_game_start).setEnabled(true);
         } else if (adapter != null) {
             pushMessage("Buddy " + message);
         }
@@ -200,8 +205,6 @@ public class MasterRoomFragment extends ListFragment
         if (networkInfo.isConnected()) {
             manager.requestConnectionInfo(channel, this);
             manager.requestGroupInfo(channel, this);
-            //ゲーム開始ボタンを有効にする
-            contentView.findViewById(R.id.btn_game_start).setEnabled(true);
         } else {
             peers.clear();
             ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();

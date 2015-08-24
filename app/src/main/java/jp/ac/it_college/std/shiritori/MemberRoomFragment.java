@@ -25,7 +25,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MemberRoomFragment extends ListFragment
+public class MemberRoomFragment extends RoomFragment
         implements OnReceiveListener, View.OnClickListener,
         DeviceActionListener, ConnectionInfoListener, Handler.Callback {
 

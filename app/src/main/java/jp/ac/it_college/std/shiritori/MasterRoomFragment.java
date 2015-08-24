@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MasterRoomFragment extends ListFragment
+public class MasterRoomFragment extends RoomFragment
         implements OnReceiveListener, View.OnClickListener, ConnectionInfoListener,
         GroupInfoListener, DeviceActionListener, Handler.Callback {
 

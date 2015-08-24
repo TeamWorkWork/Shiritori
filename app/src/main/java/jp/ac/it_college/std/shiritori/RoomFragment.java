@@ -175,7 +175,7 @@ public class RoomFragment extends ListFragment
         //レイアウトにあるViewをすべてクリア
         gameLayout.removeAllViews();
         //レイアウトを切り替え
-        getActivity().getLayoutInflater().inflate(R.layout.fragment_chat, gameLayout);
+        getActivity().getLayoutInflater().inflate(R.layout.layout_game, gameLayout);
 
         //各ボタンのクリックイベントをセット
         gameLayout.findViewById(R.id.btn_send).setOnClickListener(this);

@@ -41,7 +41,7 @@ public class ChatMessageAdapter extends ArrayAdapter<String> {
 
             if (nameText != null) {
                 nameText.setText(message);
-                if (message.startsWith("Me: ")) {
+                if (message.startsWith(context.getString(R.string.txt_me))) {
                     nameText.setTextAppearance(context,
                             R.style.normalText);
                 } else {

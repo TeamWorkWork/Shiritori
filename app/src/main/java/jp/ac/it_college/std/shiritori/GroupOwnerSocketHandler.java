@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import java.io.IOException;
+import java.net.InetSocketAddress;
 import java.net.ServerSocket;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -23,7 +24,8 @@ public class GroupOwnerSocketHandler extends Thread {
 
     public GroupOwnerSocketHandler(Handler handler) throws IOException {
         try {
-            socket = new ServerSocket(MainActivity.SERVER_PORT);
+            socket = new ServerSocket();
+            socket.setReuseAddress(true);
             this.handler = handler;
             Log.d("GroupOwnerSocketHandler", "Socket Started");
         } catch (IOException e) {
@@ -45,6 +47,7 @@ public class GroupOwnerSocketHandler extends Thread {
     public void run() {
         while (true) {
             try {
+                socket.bind(new InetSocketAddress(MainActivity.SERVER_PORT));
                 // A blocking operation. Initiate a ChatManager instance when
                 // there is a new connection
                 pool.execute(new ChatManager(socket.accept(), handler));

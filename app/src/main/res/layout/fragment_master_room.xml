@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="3dp"
-    android:id="@+id/layout_master_room"
+    android:id="@+id/layout_game_room"
     >
 
     <TextView
@@ -101,12 +101,10 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
             <Button
-                android:id="@+id/btn_game_start"
+                android:id="@+id/btn_game_start_or_ready"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.5"
-                android:enabled="false"
-                android:text="@string/game_start" />
+                android:layout_weight="0.5" />
 
             <Button
                 android:id="@+id/btn_room_exit"

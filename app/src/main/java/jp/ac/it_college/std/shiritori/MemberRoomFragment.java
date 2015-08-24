@@ -22,7 +22,7 @@ public class MemberRoomFragment extends RoomFragment
         super.onCreateView(inflater, container, savedInstanceState);
 
         //準備完了ボタンの設定
-        setUpGameButton(true, R.string.game_ready, this);
+        setUpGameButton(true, R.string.game_ready);
 
         //受け取ったinfo/group情報をセットする
         if (getArguments() != null) {

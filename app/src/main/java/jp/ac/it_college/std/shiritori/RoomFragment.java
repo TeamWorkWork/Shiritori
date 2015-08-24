@@ -116,16 +116,15 @@ public class RoomFragment extends ListFragment
      *
      * @param isEnabled
      * @param txtResId
-     * @param listener
      */
-    public void setUpGameButton(boolean isEnabled, int txtResId, View.OnClickListener listener) {
+    public void setUpGameButton(boolean isEnabled, int txtResId) {
         Button button = (Button) contentView.findViewById(R.id.btn_game_start_or_ready);
         //ボタンの有効・無効セット
         button.setEnabled(isEnabled);
         //テキストをセット
         button.setText(txtResId);
         //クリックリスナーをセット
-        button.setOnClickListener(listener);
+        button.setOnClickListener(this);
     }
 
     /**

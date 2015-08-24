@@ -21,7 +21,7 @@ public class MasterRoomFragment extends RoomFragment
         super.onCreateView(inflater, container, savedInstanceState);
 
         //ゲーム開始ボタンの設定
-        setUpGameButton(false, R.string.game_start, this);
+        setUpGameButton(false, R.string.game_start);
 
         //周辺の端末にルーム作成を通知
         discover();

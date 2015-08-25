@@ -48,6 +48,8 @@ public class RoomFragment extends ListFragment
     TextView chatLine;
     Thread thread;
 
+    private boolean isMyTurn;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -187,6 +189,28 @@ public class RoomFragment extends ListFragment
         //Chat用のListViewをセット
         chatListView = (ListView) gameLayout.findViewById(R.id.list_chat);
         chatListView.setAdapter(messageAdapter);
+
+        //しりとりの順番用フラグをセット
+        if (this instanceof MasterRoomFragment) {
+            isMyTurn = true;
+        } else {
+            isMyTurn = false;
+        }
+
+        setChatLineEnabled(isMyTurn);
+    }
+
+    /**
+     * しりとりの順番に応じてチャットラインの有効/無効をセット
+     * @param myTurn
+     */
+    private void setChatLineEnabled(boolean myTurn) {
+        int hint = myTurn ? R.string.txt_hint_my_turn : R.string.txt_hit_opponent_turn;
+
+        chatLine.setHint(hint);
+        chatLine.setEnabled(myTurn);
+        //Sendボタンの有効/無効をセット
+        gameLayout.findViewById(R.id.btn_send).setEnabled(myTurn);
     }
 
     /**
@@ -198,7 +222,14 @@ public class RoomFragment extends ListFragment
         //メッセージを「：」で分割
         String[] messageAry = message.split(":");
         String name = messageAry[0];
-        String msg = messageAry[1];
+        String msg;
+
+        try {
+            msg  = messageAry[1];
+        } catch (ArrayIndexOutOfBoundsException e) {
+            e.printStackTrace();
+            return;
+        }
 
         //最後の文字に色をつける
         String result = String.format(
@@ -206,6 +237,11 @@ public class RoomFragment extends ListFragment
                 msg.substring(0, msg.length() - 1), msg.substring(msg.length() - 1));
         messageAdapter.add(result);
         messageAdapter.notifyDataSetChanged();
+
+        //ターンフラグを反転
+        isMyTurn = !isMyTurn;
+        //チャットラインの有効/無効を設定
+        setChatLineEnabled(isMyTurn);
     }
 
     /**

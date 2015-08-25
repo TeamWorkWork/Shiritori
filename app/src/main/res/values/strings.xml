@@ -33,6 +33,6 @@
     <string name="txt_me">Me:</string>
     <string name="txt_opponent">Opponent:</string>
 
-    <string name="end_of_line" formatted="false">%s:%s&lt;font color=\'#FF0000\'&gt;%s&lt;/font&gt;</string>
+    <string name="end_of_line" formatted="false">%s: %s&lt;font color=\'#FF0000\'&gt;%s&lt;/font&gt;</string>
 
 </resources>

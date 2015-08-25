@@ -14,6 +14,7 @@ import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -194,7 +195,16 @@ public class RoomFragment extends ListFragment
      * @param message
      */
     private void pushMessage(String message) {
-        messageAdapter.add(message);
+        //メッセージを「：」で分割
+        String[] messageAry = message.split(":");
+        String name = messageAry[0];
+        String msg = messageAry[1];
+
+        //最後の文字に色をつける
+        String result = String.format(
+                getText(R.string.end_of_line).toString(), name,
+                msg.substring(0, msg.length() - 1), msg.substring(msg.length() - 1));
+        messageAdapter.add(result);
         messageAdapter.notifyDataSetChanged();
     }
 

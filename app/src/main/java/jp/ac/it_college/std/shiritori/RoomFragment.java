@@ -17,18 +17,27 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.textservice.SentenceSuggestionsInfo;
+import android.view.textservice.SpellCheckerSession.SpellCheckerSessionListener;
+import android.view.textservice.SuggestionsInfo;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import jp.ac.it_college.std.shiritori.TimeLimitTimer.TimerActionLister;
 
 public class RoomFragment extends ListFragment
-        implements OnReceiveListener, DeviceActionListener,
-        Handler.Callback, View.OnClickListener, ConnectionInfoListener, GroupInfoListener {
+        implements OnReceiveListener, DeviceActionListener,Handler.Callback,
+        View.OnClickListener, ConnectionInfoListener, GroupInfoListener,
+        SpellCheckerSessionListener, TimerActionLister {
 
     //変数宣言
     WifiP2pDevice device;
@@ -47,6 +56,18 @@ public class RoomFragment extends ListFragment
     TextView chatLine;
     Thread thread;
 
+    private boolean isMyTurn;
+    private SpellChecker spellChecker;
+    private String lastStr;
+    private boolean isGameOver;
+    private TextView timeLimit;
+    private TimeLimitTimer timer;
+
+    public static final String YOU_WIN = "YOU WIN!";
+    public static final String YOU_LOSE = "YOU LOSE...";
+    private static final long START_TIME = 20000; //開始時間(20秒)
+    private static final long INTERVAL = 10; //インターバル(0.01秒)
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -61,6 +82,13 @@ public class RoomFragment extends ListFragment
     public void onDestroyView() {
         //OnReceiveListener削除
         ((MainActivity) getActivity()).getEventManager().removeOnReceiveListener(this);
+        //通信切断
+        disconnect();
+        //タイマーを停止
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
         super.onDestroyView();
     }
 
@@ -84,6 +112,9 @@ public class RoomFragment extends ListFragment
         ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
 
         updateThisDevice();
+
+        //SpellCheckerのインスタンスを生成
+        spellChecker = new SpellChecker(getActivity(), this);
     }
 
     /**
@@ -131,10 +162,11 @@ public class RoomFragment extends ListFragment
      * ルーム退室処理
      */
     public void roomExit() {
-        disconnect();
-        getFragmentManager().beginTransaction()
-                .replace(R.id.container_root, new TitleFragment())
-                .commit();
+        if (!isGameOver) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container_root, new TitleFragment())
+                    .commit();
+        }
     }
 
     /**
@@ -150,8 +182,11 @@ public class RoomFragment extends ListFragment
             case MainActivity.GAME_START:
                 gameStart();
                 break;
+            case MainActivity.GAME_OVER:
+                gameOver(YOU_WIN);
+                break;
             default:
-                pushMessage(getString(R.string.txt_opponent) + message);
+                pushMessage(getString(R.string.txt_opponent), message);
                 break;
         }
     }
@@ -186,27 +221,130 @@ public class RoomFragment extends ListFragment
         //Chat用のListViewをセット
         chatListView = (ListView) gameLayout.findViewById(R.id.list_chat);
         chatListView.setAdapter(messageAdapter);
+
+        //タイムリミット
+        timeLimit = (TextView) contentView.findViewById(R.id.time_limit);
+
+
+        //しりとりの順番用フラグをセット
+        if (this instanceof MasterRoomFragment) {
+            isMyTurn = true;
+        } else {
+            isMyTurn = false;
+        }
+
+        setChatLineEnabled(isMyTurn);
+    }
+
+    /**
+     * ゲーム終了処理
+     * @param gameResult ゲーム結果
+     */
+    private void gameOver(String gameResult) {
+        isGameOver = true;
+        if (gameResult.equals(YOU_LOSE)) {
+            //相手にゲーム終了を通知
+            getChatManager().write(MainActivity.GAME_OVER.getBytes());
+        }
+
+        //チャットラインを無効にする
+        chatLine.setEnabled(false);
+
+        //ゲーム結果をバンドルにセット
+        Bundle bundle = new Bundle();
+        bundle.putString(MainActivity.GAME_RESULT, gameResult);
+        //フラグメントにバンドルをセット
+        ResultFragment fragment = new ResultFragment();
+        fragment.setArguments(bundle);
+        //フラグメント切り替え
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container_root, fragment)
+                .commit();
+    }
+
+    /**
+     * しりとりの順番に応じてチャットラインの有効/無効をセット
+     * @param myTurn
+     */
+    private void setChatLineEnabled(boolean myTurn) {
+        int hint = myTurn ? R.string.txt_hint_my_turn : R.string.txt_hit_opponent_turn;
+
+        if (myTurn) {
+            timer = new TimeLimitTimer(START_TIME, INTERVAL, timeLimit, this);
+            timer.start();
+        } else {
+            if (timer != null) {
+                timer.cancel();
+                timer = null;
+            }
+            float time = (float)START_TIME / 1000;
+            timeLimit.setText(String.format("%.2f", time));
+        }
+
+        chatLine.setHint(hint);
+        chatLine.setEnabled(myTurn);
+        //Sendボタンの有効/無効をセット
+        gameLayout.findViewById(R.id.btn_send).setEnabled(myTurn);
     }
 
     /**
      * メッセージをListViewにaddする
-     *
-     * @param message
+     * @param name
+     * @param msg
      */
-    private void pushMessage(String message) {
-        messageAdapter.add(message);
+    private void pushMessage(String name, String msg) {
+        if (name.isEmpty() || msg.isEmpty()) {
+            return;
+        }
+
+        //相手から送られてきた最後の文字を切り取る
+        String lastStr = msg.substring(msg.length() - 1);
+        if (name.equals(getString(R.string.txt_opponent))) {
+            this.lastStr = lastStr;
+        }
+
+        String result = String.format(
+                getText(R.string.end_of_line).toString(), name,
+                msg.substring(0, msg.length() - 1), lastStr);
+        messageAdapter.add(result);
         messageAdapter.notifyDataSetChanged();
+
+        //ターンフラグを反転
+        isMyTurn = !isMyTurn;
+        //チャットラインの有効/無効を設定
+        setChatLineEnabled(isMyTurn);
     }
 
     /**
      * 「Send」ボタンが押された際の処理
      */
     private void onClickSend() {
-        if (getChatManager() != null) {
-            getChatManager().write(chatLine.getText().toString().getBytes());
-            pushMessage(getString(R.string.txt_me) + chatLine.getText().toString());
-            chatLine.setText("");
+        String line = chatLine.getText().toString();
+        if (line.length() <= 1) {
+            Toast.makeText(getActivity(), "２文字以上の単語を入力してください", Toast.LENGTH_SHORT).show();
+            return;
         }
+
+        if (lastStr != null &&
+                !lastStr.isEmpty() && !line.startsWith(lastStr)) {
+            Toast.makeText(getActivity(), "頭文字が違います。", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        //全て半角アルファベットかどうか（大文字でも小文字でもOK）
+        String regex = "^[a-zA-z¥s]+$";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(line);
+
+        //入力値にアルファベット以外が含まれているかチェック
+        if (m.find()) {
+            //スペルチェックを実行
+            spellChecker.spellCheck(line);
+        } else {
+            //アルファベット以外が含まれている場合、ゲームオーバー
+            gameOver(YOU_LOSE);
+        }
+
     }
 
     /*
@@ -346,5 +484,45 @@ public class RoomFragment extends ListFragment
             peers.add(group.getOwner());
         }
         ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
+    }
+
+    /*
+    Implemented SpellCheckerSession.SpellCheckerSessionListener
+     */
+    @Override
+    public void onGetSuggestions(SuggestionsInfo[] results) {
+        for (SuggestionsInfo result : results) {
+            if (result.getSuggestionsCount() <= 0) {
+                //候補がない場合(スペルOK、メッセージ送信)
+                if (getChatManager() != null) {
+                    getChatManager().write(chatLine.getText().toString().getBytes());
+                    pushMessage(getString(R.string.txt_me), chatLine.getText().toString());
+                    chatLine.setText("");
+                }
+            } else {
+                //候補がある場合(スペルミス&ゲームオーバー)
+                gameOver(YOU_LOSE);
+
+            }
+        }
+
+    }
+
+    @Override
+    public void onGetSentenceSuggestions(SentenceSuggestionsInfo[] results) {
+
+    }
+
+    /*
+    Implemented TimeLimitTimer.TimerActionLister
+     */
+
+    /**
+     * 制限時間が0を下回った際に呼ばれる
+     */
+    @Override
+    public void onFinish() {
+        //ゲームオーバー処理
+        gameOver(YOU_LOSE);
     }
 }

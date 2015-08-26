@@ -28,6 +28,8 @@ public class MainActivity extends Activity
     public static final int MY_HANDLE = 0x400 + 2;
     public static final String GAME_READY = "GAME_READY_OK";
     public static final String GAME_START = "GAME_START";
+    public static final String GAME_RESULT = "GAME_RESULT";
+    public static final String GAME_OVER = "GAME_OVER";
 
 
     @Override

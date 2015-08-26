@@ -1,6 +1,7 @@
 package jp.ac.it_college.std.shiritori;
 
 import android.content.Context;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,10 +38,10 @@ public class ChatMessageAdapter extends ArrayAdapter<String> {
         String message = items.get(position);
         if (message != null && !message.isEmpty()) {
             TextView nameText = (TextView) v
-                    .findViewById(android.R.id.text1);
+                    .findViewById(textViewResourceId);
 
             if (nameText != null) {
-                nameText.setText(message);
+                nameText.setText(Html.fromHtml(message));
                 if (message.startsWith(context.getString(R.string.txt_me))) {
                     nameText.setTextAppearance(context,
                             R.style.normalText);

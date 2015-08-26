@@ -32,10 +32,12 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import jp.ac.it_college.std.shiritori.TimeLimitTimer.TimerActionLister;
+
 public class RoomFragment extends ListFragment
         implements OnReceiveListener, DeviceActionListener,Handler.Callback,
         View.OnClickListener, ConnectionInfoListener, GroupInfoListener,
-        SpellCheckerSessionListener {
+        SpellCheckerSessionListener, TimerActionLister {
 
     //変数宣言
     WifiP2pDevice device;
@@ -58,9 +60,13 @@ public class RoomFragment extends ListFragment
     private SpellChecker spellChecker;
     private String lastStr;
     private boolean isGameOver;
+    private TextView timeLimit;
+    private TimeLimitTimer timer;
 
     public static final String YOU_WIN = "YOU WIN!";
     public static final String YOU_LOSE = "YOU LOSE...";
+    private static final long START_TIME = 20000; //開始時間(20秒)
+    private static final long INTERVAL = 10; //インターバル(0.01秒)
 
 
     @Override
@@ -78,6 +84,11 @@ public class RoomFragment extends ListFragment
         ((MainActivity) getActivity()).getEventManager().removeOnReceiveListener(this);
         //通信切断
         disconnect();
+        //タイマーを停止
+        if (timer != null) {
+            timer.cancel();
+            timer = null;
+        }
         super.onDestroyView();
     }
 
@@ -211,6 +222,10 @@ public class RoomFragment extends ListFragment
         chatListView = (ListView) gameLayout.findViewById(R.id.list_chat);
         chatListView.setAdapter(messageAdapter);
 
+        //タイムリミット
+        timeLimit = (TextView) contentView.findViewById(R.id.time_limit);
+
+
         //しりとりの順番用フラグをセット
         if (this instanceof MasterRoomFragment) {
             isMyTurn = true;
@@ -253,6 +268,18 @@ public class RoomFragment extends ListFragment
      */
     private void setChatLineEnabled(boolean myTurn) {
         int hint = myTurn ? R.string.txt_hint_my_turn : R.string.txt_hit_opponent_turn;
+
+        if (myTurn) {
+            timer = new TimeLimitTimer(START_TIME, INTERVAL, timeLimit, this);
+            timer.start();
+        } else {
+            if (timer != null) {
+                timer.cancel();
+                timer = null;
+            }
+            float time = (float)START_TIME / 1000;
+            timeLimit.setText(String.format("%.2f", time));
+        }
 
         chatLine.setHint(hint);
         chatLine.setEnabled(myTurn);
@@ -484,5 +511,18 @@ public class RoomFragment extends ListFragment
     @Override
     public void onGetSentenceSuggestions(SentenceSuggestionsInfo[] results) {
 
+    }
+
+    /*
+    Implemented TimeLimitTimer.TimerActionLister
+     */
+
+    /**
+     * 制限時間が0を下回った際に呼ばれる
+     */
+    @Override
+    public void onFinish() {
+        //ゲームオーバー処理
+        gameOver(YOU_LOSE);
     }
 }

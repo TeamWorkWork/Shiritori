@@ -72,6 +72,8 @@ public class RoomFragment extends ListFragment
     public void onDestroyView() {
         //OnReceiveListener削除
         ((MainActivity) getActivity()).getEventManager().removeOnReceiveListener(this);
+        //通信切断
+        disconnect();
         super.onDestroyView();
     }
 
@@ -145,7 +147,6 @@ public class RoomFragment extends ListFragment
      * ルーム退室処理
      */
     public void roomExit() {
-        disconnect();
         getFragmentManager().beginTransaction()
                 .replace(R.id.container_root, new TitleFragment())
                 .commit();

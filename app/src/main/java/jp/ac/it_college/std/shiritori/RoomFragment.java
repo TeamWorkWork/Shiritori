@@ -14,6 +14,7 @@ import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,8 @@ public class RoomFragment extends ListFragment
     List<String> chatList = new ArrayList<>();
     TextView chatLine;
     Thread thread;
+
+    private boolean isMyTurn;
 
 
     @Override
@@ -151,7 +154,7 @@ public class RoomFragment extends ListFragment
                 gameStart();
                 break;
             default:
-                pushMessage(getString(R.string.txt_opponent) + message);
+                pushMessage(getString(R.string.txt_opponent), message);
                 break;
         }
     }
@@ -186,16 +189,50 @@ public class RoomFragment extends ListFragment
         //Chat用のListViewをセット
         chatListView = (ListView) gameLayout.findViewById(R.id.list_chat);
         chatListView.setAdapter(messageAdapter);
+
+        //しりとりの順番用フラグをセット
+        if (this instanceof MasterRoomFragment) {
+            isMyTurn = true;
+        } else {
+            isMyTurn = false;
+        }
+
+        setChatLineEnabled(isMyTurn);
+    }
+
+    /**
+     * しりとりの順番に応じてチャットラインの有効/無効をセット
+     * @param myTurn
+     */
+    private void setChatLineEnabled(boolean myTurn) {
+        int hint = myTurn ? R.string.txt_hint_my_turn : R.string.txt_hit_opponent_turn;
+
+        chatLine.setHint(hint);
+        chatLine.setEnabled(myTurn);
+        //Sendボタンの有効/無効をセット
+        gameLayout.findViewById(R.id.btn_send).setEnabled(myTurn);
     }
 
     /**
      * メッセージをListViewにaddする
-     *
-     * @param message
+     * @param name
+     * @param msg
      */
-    private void pushMessage(String message) {
-        messageAdapter.add(message);
+    private void pushMessage(String name, String msg) {
+        if (name.isEmpty() || msg.isEmpty()) {
+            return;
+        }
+
+        String result = String.format(
+                getText(R.string.end_of_line).toString(), name,
+                msg.substring(0, msg.length() - 1), msg.substring(msg.length() - 1));
+        messageAdapter.add(result);
         messageAdapter.notifyDataSetChanged();
+
+        //ターンフラグを反転
+        isMyTurn = !isMyTurn;
+        //チャットラインの有効/無効を設定
+        setChatLineEnabled(isMyTurn);
     }
 
     /**
@@ -204,7 +241,7 @@ public class RoomFragment extends ListFragment
     private void onClickSend() {
         if (getChatManager() != null) {
             getChatManager().write(chatLine.getText().toString().getBytes());
-            pushMessage(getString(R.string.txt_me) + chatLine.getText().toString());
+            pushMessage(getString(R.string.txt_me), chatLine.getText().toString());
             chatLine.setText("");
         }
     }

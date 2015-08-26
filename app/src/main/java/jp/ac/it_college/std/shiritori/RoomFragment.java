@@ -154,7 +154,7 @@ public class RoomFragment extends ListFragment
                 gameStart();
                 break;
             default:
-                pushMessage(getString(R.string.txt_opponent) + message);
+                pushMessage(getString(R.string.txt_opponent), message);
                 break;
         }
     }
@@ -215,23 +215,14 @@ public class RoomFragment extends ListFragment
 
     /**
      * メッセージをListViewにaddする
-     *
-     * @param message
+     * @param name
+     * @param msg
      */
-    private void pushMessage(String message) {
-        //メッセージを「：」で分割
-        String[] messageAry = message.split(":");
-        String name = messageAry[0];
-        String msg;
-
-        try {
-            msg  = messageAry[1];
-        } catch (ArrayIndexOutOfBoundsException e) {
-            e.printStackTrace();
+    private void pushMessage(String name, String msg) {
+        if (name.isEmpty() || msg.isEmpty()) {
             return;
         }
 
-        //最後の文字に色をつける
         String result = String.format(
                 getText(R.string.end_of_line).toString(), name,
                 msg.substring(0, msg.length() - 1), msg.substring(msg.length() - 1));
@@ -250,7 +241,7 @@ public class RoomFragment extends ListFragment
     private void onClickSend() {
         if (getChatManager() != null) {
             getChatManager().write(chatLine.getText().toString().getBytes());
-            pushMessage(getString(R.string.txt_me) + chatLine.getText().toString());
+            pushMessage(getString(R.string.txt_me), chatLine.getText().toString());
             chatLine.setText("");
         }
     }

@@ -30,8 +30,8 @@
     <string name="txt_hint">Type Message</string>
     <string name="btn_send">Send</string>
     <string name="lbl_time_limit">制限時間:</string>
-    <string name="txt_me">Me:</string>
-    <string name="txt_opponent">Opponent:</string>
+    <string name="txt_me">Me</string>
+    <string name="txt_opponent">Opponent</string>
     <string name="txt_hint_my_turn">あなたのターンです。</string>
     <string name="txt_hit_opponent_turn">相手のターンです。</string>
 

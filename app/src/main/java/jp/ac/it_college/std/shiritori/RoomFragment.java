@@ -29,6 +29,8 @@ import android.widget.Toast;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class RoomFragment extends ListFragment
         implements OnReceiveListener, DeviceActionListener,Handler.Callback,
@@ -54,6 +56,7 @@ public class RoomFragment extends ListFragment
 
     private boolean isMyTurn;
     private SpellChecker spellChecker;
+    private String lastStr;
 
 
     @Override
@@ -231,9 +234,15 @@ public class RoomFragment extends ListFragment
             return;
         }
 
+        //相手から送られてきた最後の文字を切り取る
+        String lastStr = msg.substring(msg.length() - 1);
+        if (name.equals(getString(R.string.txt_opponent))) {
+            this.lastStr = lastStr;
+        }
+
         String result = String.format(
                 getText(R.string.end_of_line).toString(), name,
-                msg.substring(0, msg.length() - 1), msg.substring(msg.length() - 1));
+                msg.substring(0, msg.length() - 1), lastStr);
         messageAdapter.add(result);
         messageAdapter.notifyDataSetChanged();
 
@@ -247,8 +256,32 @@ public class RoomFragment extends ListFragment
      * 「Send」ボタンが押された際の処理
      */
     private void onClickSend() {
-        //スペルチェックを実行
-        spellChecker.spellCheck(chatLine.getText().toString());
+        String line = chatLine.getText().toString();
+        if (line.length() <= 1) {
+            Toast.makeText(getActivity(), "２文字以上の単語を入力してください", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (lastStr != null &&
+                !lastStr.isEmpty() && !line.startsWith(lastStr)) {
+            Toast.makeText(getActivity(), "頭文字が違います。", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        //全て半角アルファベットかどうか（大文字でも小文字でもOK）
+        String regex = "^[a-zA-z¥s]+$";
+        Pattern p = Pattern.compile(regex);
+        Matcher m = p.matcher(line);
+
+        //入力値にアルファベット以外が含まれているかチェック
+        if (m.find()) {
+            //スペルチェックを実行
+            spellChecker.spellCheck(line);
+        } else {
+            //アルファベット以外が含まれている場合、ゲームオーバー
+            Toast.makeText(getActivity(), "Spell miss", Toast.LENGTH_SHORT).show();
+        }
+
     }
 
     /*

@@ -57,6 +57,10 @@ public class RoomFragment extends ListFragment
     private boolean isMyTurn;
     private SpellChecker spellChecker;
     private String lastStr;
+    private boolean isGameOver;
+
+    public static final String YOU_WIN = "YOU WIN!";
+    public static final String YOU_LOSE = "YOU LOSE...";
 
 
     @Override
@@ -147,9 +151,11 @@ public class RoomFragment extends ListFragment
      * ルーム退室処理
      */
     public void roomExit() {
-        getFragmentManager().beginTransaction()
-                .replace(R.id.container_root, new TitleFragment())
-                .commit();
+        if (!isGameOver) {
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.container_root, new TitleFragment())
+                    .commit();
+        }
     }
 
     /**
@@ -164,6 +170,9 @@ public class RoomFragment extends ListFragment
                 break;
             case MainActivity.GAME_START:
                 gameStart();
+                break;
+            case MainActivity.GAME_OVER:
+                gameOver(YOU_WIN);
                 break;
             default:
                 pushMessage(getString(R.string.txt_opponent), message);
@@ -210,6 +219,32 @@ public class RoomFragment extends ListFragment
         }
 
         setChatLineEnabled(isMyTurn);
+    }
+
+    /**
+     * ゲーム終了処理
+     * @param gameResult ゲーム結果
+     */
+    private void gameOver(String gameResult) {
+        isGameOver = true;
+        if (gameResult.equals(YOU_LOSE)) {
+            //相手にゲーム終了を通知
+            getChatManager().write(MainActivity.GAME_OVER.getBytes());
+        }
+
+        //チャットラインを無効にする
+        chatLine.setEnabled(false);
+
+        //ゲーム結果をバンドルにセット
+        Bundle bundle = new Bundle();
+        bundle.putString(MainActivity.GAME_RESULT, gameResult);
+        //フラグメントにバンドルをセット
+        ResultFragment fragment = new ResultFragment();
+        fragment.setArguments(bundle);
+        //フラグメント切り替え
+        getFragmentManager().beginTransaction()
+                .replace(R.id.container_root, fragment)
+                .commit();
     }
 
     /**
@@ -280,7 +315,7 @@ public class RoomFragment extends ListFragment
             spellChecker.spellCheck(line);
         } else {
             //アルファベット以外が含まれている場合、ゲームオーバー
-            Toast.makeText(getActivity(), "Spell miss", Toast.LENGTH_SHORT).show();
+            gameOver(YOU_LOSE);
         }
 
     }
@@ -438,8 +473,9 @@ public class RoomFragment extends ListFragment
                     chatLine.setText("");
                 }
             } else {
-                //候補がある場合(スペルミス)
-                Toast.makeText(getActivity(), "Spell miss", Toast.LENGTH_SHORT).show();
+                //候補がある場合(スペルミス&ゲームオーバー)
+                gameOver(YOU_LOSE);
+
             }
         }
 

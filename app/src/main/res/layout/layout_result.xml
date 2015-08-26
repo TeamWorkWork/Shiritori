@@ -10,20 +10,30 @@
         android:layout_height="match_parent">
 
         <TextView
+            android:id="@+id/lbl_game_over"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Game Over"
-            android:id="@+id/textView"
             android:layout_marginTop="145dp"
+            android:text="@string/lbl_game_over"
             android:textSize="32dp"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true" />
 
+        <TextView
+            android:id="@+id/lbl_result"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/lbl_game_over"
+            android:layout_marginTop="50dp"
+            android:layout_centerHorizontal="true"
+            android:textSize="38sp"
+            />
+
         <Button
+            android:id="@+id/btn_to_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="タイトルへ"
-            android:id="@+id/button"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="116dp" />

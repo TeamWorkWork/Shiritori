@@ -36,5 +36,6 @@
     <string name="txt_hit_opponent_turn">相手のターンです。</string>
 
     <string name="end_of_line" formatted="false">%s: %s&lt;font color=\'#FF0000\'&gt;%s&lt;/font&gt;</string>
+    <string name="lbl_game_over">GAME OVER</string>
 
 </resources>

@@ -14,22 +14,26 @@ import android.net.wifi.p2p.WifiP2pManager.ConnectionInfoListener;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.textservice.SentenceSuggestionsInfo;
+import android.view.textservice.SpellCheckerSession.SpellCheckerSessionListener;
+import android.view.textservice.SuggestionsInfo;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class RoomFragment extends ListFragment
-        implements OnReceiveListener, DeviceActionListener,
-        Handler.Callback, View.OnClickListener, ConnectionInfoListener, GroupInfoListener {
+        implements OnReceiveListener, DeviceActionListener,Handler.Callback,
+        View.OnClickListener, ConnectionInfoListener, GroupInfoListener,
+        SpellCheckerSessionListener {
 
     //変数宣言
     WifiP2pDevice device;
@@ -49,6 +53,7 @@ public class RoomFragment extends ListFragment
     Thread thread;
 
     private boolean isMyTurn;
+    private SpellChecker spellChecker;
 
 
     @Override
@@ -87,6 +92,9 @@ public class RoomFragment extends ListFragment
         ((MainActivity) getActivity()).getEventManager().addOnReceiveListener(this);
 
         updateThisDevice();
+
+        //SpellCheckerのインスタンスを生成
+        spellChecker = new SpellChecker(getActivity(), this);
     }
 
     /**
@@ -239,11 +247,8 @@ public class RoomFragment extends ListFragment
      * 「Send」ボタンが押された際の処理
      */
     private void onClickSend() {
-        if (getChatManager() != null) {
-            getChatManager().write(chatLine.getText().toString().getBytes());
-            pushMessage(getString(R.string.txt_me), chatLine.getText().toString());
-            chatLine.setText("");
-        }
+        //スペルチェックを実行
+        spellChecker.spellCheck(chatLine.getText().toString());
     }
 
     /*
@@ -383,5 +388,31 @@ public class RoomFragment extends ListFragment
             peers.add(group.getOwner());
         }
         ((WiFiPeerListAdapter) getListAdapter()).notifyDataSetChanged();
+    }
+
+    /*
+    Implemented SpellCheckerSession.SpellCheckerSessionListener
+     */
+    @Override
+    public void onGetSuggestions(SuggestionsInfo[] results) {
+        for (SuggestionsInfo result : results) {
+            if (result.getSuggestionsCount() <= 0) {
+                //候補がない場合(スペルOK、メッセージ送信)
+                if (getChatManager() != null) {
+                    getChatManager().write(chatLine.getText().toString().getBytes());
+                    pushMessage(getString(R.string.txt_me), chatLine.getText().toString());
+                    chatLine.setText("");
+                }
+            } else {
+                //候補がある場合(スペルミス)
+                Toast.makeText(getActivity(), "Spell miss", Toast.LENGTH_SHORT).show();
+            }
+        }
+
+    }
+
+    @Override
+    public void onGetSentenceSuggestions(SentenceSuggestionsInfo[] results) {
+
     }
 }
